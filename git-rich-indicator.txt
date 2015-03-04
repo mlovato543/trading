@@ -1,4 +1,9 @@
-{----------BEGIN STOCASTICS----------t6estr}
+
+{Dad's Comments: ---}
+{Matt's Comments: ---}
+{Jeff's Comments: ---}
+
+{----------BEGIN STOCASTICS----------}
 Inputs:
  PriceH( High), 
  PriceL( Low),
