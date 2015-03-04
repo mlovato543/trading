@@ -157,677 +157,44 @@ If Barinterval = 2 then s10 = Average (Close,25);
 If Barinterval = 5 then S19 = Average (Close,19);
 If Barinterval = 2 then s19 = Average (Close,48);
 
-
 If Time = GlobexOpen then begin
  GlobexHigh=high;
  GlobexLow=low;
 end;
 
-
 If Date > Date[1] then begin
-
  GlobexHigh = 0;
-
  GlobexLow = 0;
-
 end;
-
-
-
 
 If Time >= GlobexOpen + ChartTimeFrame and (GlobexHigh=0 or GlobexLow=0) then begin
-
  GlobexHigh=High; 
-
  GlobexLow=Low;
-
 end;
-
-
 
 
 If time > GlobexOpen and time <= GlobexClose then begin
-
  If High > GlobexHigh then GlobexHigh = High;
-
  If Low < GlobexLow then GlobexLow = Low;
-
  GlobexRange = GlobexHigh - GlobexLow;
-
  Bounceline = Round2Fraction(GlobexRange/2 + GlobexLow);
-
  UpsideTarget1 = Round2Fraction(GlobexLow + GlobexRange*1.34);
-
  UpsideTarget2 = Round2Fraction(GlobexLow + GlobexRange*1.618);
-
  DownsideTarget1 = Round2Fraction(GlobexHigh - GlobexRange*1.34);
-
  DownsideTarget2 = Round2Fraction(GlobexHigh - GlobexRange*1.618);
-
 End;
-
-
 
 
 If time >= GlobexOpen and time <= MarketClose then
-
  RangeSet = 1
-
 Else Begin
-
  RangeSet = 0;
-
 End;
-
 {----------END JOHN EMINI LINES----------}
 
 
 
-
-{----------SET AND MAINTAIN BOUNCE ZONES----------}
-
-Variables:
-
- RoomToRun (2.0),
-
- SmallBounceZone (1.25),
-
- LargeBounceZone (2.75),
-
- GBSmallRange (0),
-
- MaxRisk (2);
-
-
-
-
-Variables:
-
- BounceZoneStatus ("none"),
-
- BounceZoneTop (0),
-
- BounceZoneBottom (0),
-
- LongEntry (0),
-
- ShortEntry (0),
-
- EntryType ("none"),
-
- ZoneDnStop (0);
-
-  
-
- {DEFINE NO BOUNCE ZONE
-
- If AbsValue(Bounceline - PP) > SmallBounceZone
-
- And AbsValue (Bounceline - S10) > SmallBounceZone
-
- And AbsValue(Bounceline - PP) > LargeBounceZone
-
- {And AbsValue (Bounceline - S10) > LargeBounceZone}
-
- Then BounceZoneStatus = "none";
-}
-   
-
- {DEFINE LARGE R1 BOUNCE ZONE 
-
- If AbSValue(Bounceline - R1) <= LargeBounceZone
-
- And AbsValue(Bounceline - R1) > SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "LargeBounceZone";
-
-  If R1 >= Bounceline
-
-  then begin
-
-   BounceZoneTop = R1;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = R1;
-
-  end;   
-
- End;
-}
-  
-
- {DEFINE SMALL R1 BOUNCE ZONE 
-
- If AbSValue(Bounceline - R1) <= SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "SmallBounceZone";
-
-  If R1 >= Bounceline
-
-  then begin
-
-   BounceZoneTop = R1;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = R1;
-
-  end;   
-
- End;
-}
- 
-
- {DEFINE LARGE S1 BOUNCE ZONE
-
- If AbSValue(Bounceline - S1) <= LargeBounceZone
-
- And AbsValue(Bounceline - S1) > SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "LargeBounceZone";
-
-  If S1 >= Bounceline
-
-  then begin
-
-   BounceZoneTop = S1;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = S1;
-
-  end;   
-
- End;
-} 
- 
-
- {DEFINE SMALL S1 BOUNCE ZONE 
-
- If AbSValue(Bounceline - S1) <= SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "SmallBounceZone";
-
-  If S1 >= Bounceline
-
-  then begin
-
-   BounceZoneTop = S1;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = S1;
-
-  end;   
-
- End;
-}
- 
-
- {DEFINE SMALL S10 BOUNCE ZONE
-
- If Absvalue(Bounceline - S10) <= SmallBounceZone
-
- Then begin
-
-  If Absvalue (Bounceline - S10) > Absvalue (Bounceline - PP){Must be outside PP, or...}
-
-  Or Absvalue (Bounceline - PP) > LargeBounceZone{... PP must be outside large bounce zone}
-
-  Then begin
-
-   BounceZoneStatus = "SmallBounceZone";
-
-   If S10 >= Bounceline
-
-   then begin
-
-    BounceZoneTop = S10;
-
-    BounceZoneBottom = Bounceline;
-
-   end
-
-   Else begin
-
-    BounceZoneTop = Bounceline;
-
-    BounceZoneBottom = S10;
-
-   end; 
-
-  end;
-
- End;
-}
- 
-
- {DEFINE LARGE PP BOUNCE ZONE 
-
- If AbSValue(Bounceline - PP) <= LargeBounceZone
-
- And AbsValue(Bounceline - PP) > SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "LargeBounceZone";
-
-  If PP >= Bounceline
-
-  then begin
-
-   BounceZoneTop = PP;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = PP;
-
-  end;   
-
- End; 
-}
-  
-
- {DEFINE SMALL PP BOUNCE ZONE 
-
- If AbSValue(Bounceline - PP) <= SmallBounceZone
-
- Then begin
-
-  BounceZoneStatus = "SmallBounceZone";
-
-  If PP >= Bounceline
-
-  then begin
-
-   BounceZoneTop = PP;
-
-   BounceZoneBottom = Bounceline;
-
-  end
-
-  Else begin
-
-   BounceZoneTop = Bounceline;
-
-   BounceZoneBottom = PP;
-
-  end;   
-
- End;
-}
- 
-
- {DEFINE LARGE S10 BOUNCE ZONE
-
- If Absvalue (Bounceline - S10) <= LargeBounceZone
-
- And AbsValue(Bounceline - S10) > SmallBounceZone
-
- Then begin
-
-  If Absvalue (Bounceline - S10) > Absvalue (Bounceline - PP){Must be outside PP, or...}
-
-  Or Absvalue (Bounceline - PP) > LargeBounceZone{... PP must be outside large bounce zone}
-
-  Then begin
-
-   BounceZoneStatus = "LargeBounceZone";
-
-   If S10 >= Bounceline
-
-   then begin
-
-    BounceZoneTop = S10;
-
-    BounceZoneBottom = Bounceline;
-
-   end
-
-   Else begin
-
-    BounceZoneTop = Bounceline;
-
-    BounceZoneBottom = S10;
-
-   end; 
-
-  end;
-
- End;}
-
-{-----------------END OF SET AND MAINTAIN BOUNCE ZONES---------------} 
-
-
-
-
-{----------BEGIN SET TREND----------
-
-Variables:
-
-TrendChange (2);
-
-
-
-
-If Time = 831 then begin
-
- If Close > Bounceline then Trend = 1;
-
- If Close < Bounceline then Trend = -1;
-
- 
-
- If Close = Bounceline then begin
-
-   If S10 < Bounceline then Trend = -1;
-
-   If S10 > Bounceline then Trend = 1;
-
- end;
-
-end;
-
-
-
-
-If Date > Date[1] then Trend = 0;
-
-
-
-
-If Time > 831
-
-and Trend = 1
-
-And ((Low <= Bounceline - TrendChange and BounceZoneStatus= "none" ) or Low <= BounceZoneBottom - TrendChange)
-
-Then
-
-Trend = -1;
-
-
-
-
-If Time > 831
-
-And Trend = -1
-
-And ((High >= Bounceline + TrendChange and BounceZoneStatus= "none" )or High >= BounceZoneTop + TrendChange)
-
-Then
-
-Trend = 1;
-}
-{----------END SET TREND----------}
-
-
-
-
-
-
-
-
-
-
-
-
-
-{----------BEGIN GUARDRAIL----------
-
-{LONG GUARDRAIL}
-
-Variables:
-
-LongGdrlTop (1),
-
-LongGdrlBottom (1),
-
-ShortGdrlTop (1),
-
-ShortGdrlBottom (1);
-
-
-
-
-Variables:
-
-GuardRailStatus ("none");
-
-
-
-
-If S10 > S19
-
-And S10 > S10[1]
-
-And S10_30 > S19_30
-
-And S10_30 > S10_30[1]
-
-And Open > S10 - LongGdrlBottom
-
-And Open [1] > S10[1] - LongGdrlBottom
-
-And Open [2] > S10[2] - LongGdrlBottom
-
-And Open [3] > S10[3] - LongGdrlBottom
-
-And Open [4] > S10[4] - LongGdrlBottom
-
-And Open [5] > S10[5] - LongGdrlBottom
-
-And Open [6] > S10[6] - LongGdrlBottom
-
-And Open [7] > S10[7] - LongGdrlBottom
-
-And Open [8] > S10[8] - LongGdrlBottom
-
-And Open [9] > S10[9] - LongGdrlBottom
-
-And Open [10] > S10[10] - LongGdrlBottom
-
-And Open [11] > S10[11] - LongGdrlBottom
-
-And Open [12] > S10[12] - LongGdrlBottom
-
-And Open [13] > S10[13] - LongGdrlBottom
-
-And Open [14] > S10[14] - LongGdrlBottom
-
-And Open [15] > S10[15] - LongGdrlBottom
-
-And Open < S10 + LongGdrlTop
-
-And Open [1] < S10[1] + LongGdrlTop
-
-And Open [2] < S10[2] + LongGdrlTop
-
-And Open [3] < S10[3] + LongGdrlTop
-
-And Open [4] < S10[4] + LongGdrlTop
-
-And Open [5] < S10[5] + LongGdrlTop
-
-And Open [6] < S10[6] + LongGdrlTop
-
-And Open [7] < S10[7] + LongGdrlTop
-
-And Open [8] < S10[8] + LongGdrlTop
-
-And Open [9] < S10[9] + LongGdrlTop
-
-And Open [10] < S10[10] + LongGdrlTop
-
-And Open [11] < S10[11] + LongGdrlTop
-
-And Open [12] < S10[12] + LongGdrlTop
-
-And Open [13] < S10[13] + LongGdrlTop
-
-And Open [14] < S10[14] + LongGdrlTop
-
-And Open [15] < S10[15] + LongGdrlTop
-
-
-
-
-Then GuardRailStatus = "Long GR";
-
-
-
-
-If GuardRailStatus = "Long GR"
-
-And Open < S10 - LongGdrlBottom
-
-Then GuardRailStatus = "No GR";
-}
-
-
-
-
-
-
-{SHORT GUARDRAIL
-
-If S10 < S19
-
-And S10 < S10[1]
-
-And S10_30 < S19_30
-
-And S10_30 < S10_30[1]
-
-And Close > S10 - ShortGdrlBottom
-
-And Close [1] > S10[1] - ShortGdrlBottom
-
-And Close [2] > S10[2] - ShortGdrlBottom
-
-And Close [3] > S10[3] - ShortGdrlBottom
-
-And Close [4] > S10[4] - ShortGdrlBottom
-
-And Close [5] > S10[5] - ShortGdrlBottom
-
-And Close [6] > S10[6] - ShortGdrlBottom
-
-And Close [7] > S10[7] - ShortGdrlBottom
-
-And Close [8] > S10[8] - ShortGdrlBottom
-
-And Close [9] > S10[9] - ShortGdrlBottom
-
-And Close [10] > S10[10] - ShortGdrlBottom
-
-And Close [11] > S10[11] - ShortGdrlBottom
-
-And Close [12] > S10[12] - ShortGdrlBottom
-
-And Close [13] > S10[13] - ShortGdrlBottom
-
-And Close [14] > S10[14] - ShortGdrlBottom
-
-And Close [15] > S10[15] - ShortGdrlBottom
-
-And Close < S10 + ShortGdrlTop
-
-And Close [1] < S10[1] + ShortGdrlTop
-
-And Close [2] < S10[2] + ShortGdrlTop
-
-And Close [3] < S10[3] + ShortGdrlTop
-
-And Close [4] < S10[4] + ShortGdrlTop
-
-And Close [5] < S10[5] + ShortGdrlTop
-
-And Close [6] < S10[6] + ShortGdrlTop
-
-And Close [7] < S10[7] + ShortGdrlTop
-
-And Close [8] < S10[8] + ShortGdrlTop
-
-And Close [9] < S10[9] + ShortGdrlTop
-
-And Close [10] < S10[10] + ShortGdrlTop
-
-And Close [11] < S10[11] + ShortGdrlTop
-
-And Close [12] < S10[12] + ShortGdrlTop
-
-And Close [13] < S10[13] + ShortGdrlTop
-
-And Close [14] < S10[14] + ShortGdrlTop
-
-And Close [15] < S10[15] + ShortGdrlTop
-
-
-
-
-Then GuardRailStatus = "Short GR";
-
-
-
-
-If GuardRailStatus = "Short GR"
-
-And Close > S10 + ShortGdrlTop
-
-Then GuardRailStatus = "No GR";
-
-}
-
-{----------END GUARDRAIL----------}
-
-
-
-
-
-
-
 {------------------------------------------------------------------}
-
 {------------------------END INDICATOR-----------------------------}
 
 
@@ -843,36 +210,21 @@ Then GuardRailStatus = "No GR";
 
 
 {------------------------------------------------------------------}
-
 {-------------------------BEGIN PLOT-------------------------------}
 
 
-
-
 {----------BEGIN PLOT TREND----------
-
 If Trend = 1 and Trend[1] <>1
-
 then
-
 Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-
 If Trend = -1 and Trend[1] <>-1
-
 then
-
 Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
-
 If Trend = 1 and Trend[1] <>1
-
 then
-
 Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-
 If Trend = -1 and Trend[1] <>-1
-
 then
-
 Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
 }
 {----------END PLOT TREND----------}
@@ -881,94 +233,166 @@ Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
 
 
 {----------BEGIN PLOT PIVOT POINTS----------}
-
 if Counter >= 2 and ( BarType < 3 or BarType = 14 ) and time < 1600 then { if at least one full
-
  day's data has been processed and chart bar interval is daily, intra-day, second
-
  or tick bar then plot }
-
  begin
-
  if Plot_5or7 = 7 then
-
   Plot10( R3, "R3" ) ;
-
  Plot11( R2, "R2" ) ;
-
  Plot12( R1, "R1" ) ;
-
  Plot13( PP, "PP" ) ;
-
  Plot14( S1, "S1" ) ;
-
  Plot15( S2, "S2" ) ;
-
  if Plot_5or7 = 7 then
-
    Plot16( S3, "S3" ) ;
-
  end
-
 else if BarType >= 3 and BarType <> 14 then
-
  RaiseRuntimeError( "Floor Trader Pivots can be applied only to daily, " +
-
   "intraday, second, tick or volume bars." )
-
 else if LastBarOnChartEx and Counter < 2 then
-
  RaiseRuntimeError( "Not enough data to calculate.  Try loading more " +
-
   "historical data or increasing 'load additional bars' setting so that a " +
-
   "minimum of 2 full days of data are available." ) ;
-
 {----------END PLOT PIVOT POINTS----------}
 
-
-
-
 {----------END PLOT MOVING AVERAGES----------}
-
 Plot8 (S10, "S10");
-
 Plot9 (S19, "S19");
-
 S10_30 = Average (Close,10*6);
 Plot17 (S10_30, "S10_30");
-
 {----------END PLOT MOVING AVERAGES----------}
-
-
 
 
 {----------BEGIN PLOT JOHN EMINI LINES----------}
-
 If RangeSet[1]=1 and time < MarketClose + ChartTimeFrame then begin
-
  Plot1 (GlobexHigh,"Globex High");
-
  Plot2 (GlobexLow, "Globex Low");
-
  Plot3 (Bounceline, "Bounce Line");
-
  Plot4 (UpsideTarget1, "Upside T1");
-
  Plot5 (UpsideTarget2, "Upside T2");
-
  Plot6 (DownsideTarget1, "Downside T1");
-
  Plot7 (DownsideTarget2, "Downside T2");
-
 end;
-
 {----------END PLOT JOHN EMINI LINES----------}
 
- 
 
+
+
+
+
+
+
+
+
+
+{----------BEGIN CALCULATE STATISTICS----------}
+Array:  GB_Range[] (0);
+Array_SetMaxIndex(GB_Range, 31) ;
+
+variables:
+Count (0),
+Count_loop (0)
+;
+
+//Populate Array for first 30 days
+If Time = 825
+And Count < 30
+then
+Begin
+    Count = Count +1;
+	GB_Range[Count] = GlobexHigh - GlobexLow;
+End;
+
+//Update Array each day after first 30 days
+If Time = 825
+And Count[1] = 30 
+then
+Begin
+	Count_loop = 0;
+	While Count_loop < 30 
+	begin
+		Count_loop = Count_loop +1;
+		GB_Range[Count_loop] = GB_Range[Count_loop+1];
+	End;
+	GB_Range[30] = GlobexHigh - GlobexLow;	
+	
+	
+End;
+
+{---------- END  CALCULATE STATISTICS----------}
+
+
+
+
+
+
+{----------BEGIN PLOT STATISTICS----------}
+
+Inputs:
+Display_Stats (1);
+
+Variables:
+GB_Range_SUM_30 (0),
+GB_Range_SUM_25 (0),
+GB_Range_SUM_20 (0),
+GB_Range_SUM_15 (0),
+GB_Range_SUM_10 (0),
+GB_Range_SUM_5 (0),
+GB_Range_AVG_30 (""),
+GB_Range_AVG_25 (""),
+GB_Range_AVG_20 (""),
+GB_Range_AVG_15 (""),
+GB_Range_AVG_10 (""),
+GB_Range_AVG_5 ("")
+;
+
+If Count = 30 then begin
+GB_Range_SUM_30 = Array_Sum(GB_Range, Count - 29, Count);
+GB_Range_AVG_30 = numtostr(GB_Range_SUM_30/30,2);
+end;
+
+If Count > 24 then begin
+GB_Range_SUM_25 = Array_Sum(GB_Range, Count - 24 , Count);
+GB_Range_AVG_25 = numtostr(GB_Range_SUM_25/25,2);
+end;
+
+If Count > 19 then begin
+GB_Range_SUM_20 = Array_Sum(GB_Range, Count - 19, Count);
+GB_Range_AVG_20 = numtostr(GB_Range_SUM_20/20,2);
+end;
+
+If Count > 14 then begin
+GB_Range_SUM_15 = Array_Sum(GB_Range, Count - 14, Count);
+GB_Range_AVG_15 = numtostr(GB_Range_SUM_15/15,2);
+end;
+
+If Count > 9 then begin
+GB_Range_SUM_10 = Array_Sum(GB_Range, Count -9 , Count);
+GB_Range_AVG_10 = numtostr(GB_Range_SUM_10/10,2);
+end;
+
+If Count > 4 then begin
+GB_Range_SUM_5 = Array_Sum(GB_Range, Count - 4, Count);
+GB_Range_AVG_5 = numtostr(GB_Range_SUM_5/5,2);
+end;
+
+If Time = 825
+And Display_Stats = 1
+then
+Begin
+Value79 = Text_SetColor(Text_new(D,T,R2 + 7,"Today's Globex Range: " + numtostr(GB_Range[Count],2) ),yellow);
+If Count > 4 then Value85 = Text_SetColor(Text_new(D,T,R2 + 6,"5-day avg GB Range: " + GB_Range_AVG_5 ),yellow);
+If Count > 9 then Value84 = Text_SetColor(Text_new(D,T,R2 + 5,"10-day avg GB Range: " + GB_Range_AVG_10 ),yellow);
+If Count > 14 then Value83 = Text_SetColor(Text_new(D,T,R2 + 4,"15-day avg GB Range: " + GB_Range_AVG_15 ),yellow);
+If Count > 19 then Value82 = Text_SetColor(Text_new(D,T,R2 + 3,"20-day avg GB Range: " + GB_Range_AVG_20 ),yellow);
+If Count > 24 then Value81 = Text_SetColor(Text_new(D,T,R2 + 2,"25-day avg GB Range: " + GB_Range_AVG_25 ),yellow);
+If Count = 30 then Value80 = Text_SetColor(Text_new(D,T,R2 + 1,"30-day avg GB Range: " + GB_Range_AVG_30 ),yellow);
+
+End;
+
+{---------- END  PLOT STATISTICS----------}
 
 
 {-------------------------END PLOT-------------------------------}
-
 {----------------------------------------------------------------}
