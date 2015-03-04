@@ -20,7 +20,7 @@ S.S10.above.T2 (1),
 S.S10.below.T2 (1),
 S.ERC.above.GBH (1),
 S.ERC.below.GBH (1),
-S.ExERC.below.T2 (1)
+S.ERC.below.T2 (1)
 ;
 
 Inputs:
@@ -162,15 +162,13 @@ UpsideTarget1 (0),
 UpsideTarget2 (0),
 DownsideTarget1 (0),
 DownsideTarget2 (0),
-Trend (0),
-S50 (0);
+Trend (0);
 If Barinterval = 5 then S10 = Average (Close,10);
 If Barinterval = 2 then s10 = Average (Close,25);
 If Barinterval = 5 then S19 = Average (Close,19);
 If Barinterval = 2 then s19 = Average (Close,48);
 S10_30 = Average (Close,10*6);
 S19_30 = Average (Close,19*6);
-//S50 = Average (Close,50*480);                         {added this 3.3.15  **********************}
 If Time = GlobexOpen then begin
 GlobexHigh=high;
 GlobexLow=low;
@@ -317,7 +315,8 @@ ERCEntry.e (0),
 ERCEntry.f (0),
 ERCEntry.g (0),
 ERCEntry.h (0),
-ERCEntry.i (0)
+ERCEntry.i (0),
+ERCEntry.z (0)
 ;
 
 If Marketposition = 0 then begin
@@ -339,6 +338,7 @@ ERCentry.f = 0;
 ERCentry.g = 0;
 ERCentry.h = 0;
 ERCentry.i = 0;
+ERCentry.z = 0;
 End;
 
 Variables:
@@ -494,7 +494,8 @@ End;
 
 
 
-{2.  ************6.25.13  huge stop which is really the only bad trade in last two years, only suggestion I can think of is, "if entry and BL or GH is <1 pt from entry, get out if thta level doesn't hold"}
+{2.  ************6.25.13  huge stop which is really the only bad trade in last two years, 
+only suggestion I can think of is, "if entry and BL or GH is <1 pt from entry, get out if thta level doesn't hold"}
 {3.  *************look at 2.3.15 at 9am, big stop out, I added line 474 "and my macd 30. . . . ." but for some reason it's not doing anything, can you check?}
 {7 year test:  Master 5635 456 @ 69%           2014 -3571  520 67%             2014-13 Test:   Master                 2014  }
 {===============LONG S10 ENTRIES below Upside Target 1, (S10<T1)===============}
@@ -1491,69 +1492,46 @@ Buytocover ("-ERC.Stop.f") From Entry ("(S)ERC<GBH") all contracts Next Bar at E
 {00000000000000========SHORT ERC ENTRY between GlobexHigh and Bounceline======000000000000000}
 
 
-{In 2012 there's an ERC code for trade below GBL, I didn't add it here cuz I couldn't get it to make money.}
 
-{********************Incomplete, need Matt's code finish, see notes belo}           {7 yr test:   Master         2014 15,890    508 @ 60%                   2014-13 test:  Master            2014 16,910  66 @ 75%  }
-{00000000000000======Extended GB Range SHORT ERC ENTRIES below Downside Target 2  ExERC<T2 Master========00000000000000}
-If S.ExERC.below.T2 = 1
+
+{==== SHORT ERC ENTRIES below Downside Target 2 ===}
+If S.ERC.below.T2 = 1
 And Marketposition = 0
 And Time >= 825 
 And Time < 1430
-And High - Close >= 2.75
+And High - Close >= 2.5
+And Close - Low < 2
+And Bounceline - GlobexLow > 4.5
 And Close < S10
 And Close < DownsideTarget2
-And Bounceline - GlobexLow > 4.5
-And LTopen < S10_30 + 1                {2012   this line was deleted, it's restrictive at any value}
-And S10_30 < S10_30[1] + 1            {optomize after stoploss code is installed}
-And S10 < S10[1] +.1                  {optomize after stoploss code is installed}
-And MyMACD_30 < +2                    {optomize after stoploss code is installed}
-And MyMACD < +1                       {optomize after stoploss code is installeed}
-And AbsValue (Bounceline - S10) > .25 
-And AbsValue (Close - DownsideTarget2) > .5                      {2008 needed this to eliminate bad trade on 1.29 }
-
+And LTopen < S10_30 + 1                
+And S10_30 < S10_30[1] + 1           
+And S10 < S10[1] +.1  
+And DownsideTarget2 - Close > .5
 
 Then begin
-Sellshort ("(S)ExERC<T2") 4 contracts next bar at Close + .75 limit;
-ERCEntry.b=Close + .75;
+Sellshort ("(S)ERC<T2") 4 contracts next bar at Close + .75 limit;
+ERCEntry.z=Close + .75;
 End;
 
 {scale out}
-//Buytocover ("-ERC.T1.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at DownsideTarget1 + .5 limit;
-//Buytocover ("-ERC.T2.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at DownsideTarget2 + .5 limit;
-Buytocover ("-ExERC.7pointer.b") From Entry ("(S)ExERC<T2") 2 contracts Next Bar at ERCEntry.b - 7 limit;             
-Buytocover ("-ExERC.14pointer.b") From Entry ("(S)ExERC<T2") 2 contracts Next Bar at ERCEntry.b - 14 limit;    
-//If PP < ERCEntry.b - 1.5 then Buytocover ("-ERC.PP.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at PP + .5 limit;      
-If S1 < DownsideTarget2 - 1.5 then Buytocover ("-ExERC.S1.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at S1 + .75 limit;      
-If S2 < DownsideTarget2 - 1.5 then Buytocover ("-ExERC.S2.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at S2 + .75 limit;
-If S3 < DownsideTarget2 - 1.5 then Buytocover ("-ExERC.S3.b") From Entry ("(S)ExERC<T2") 1 contracts Next Bar at S3 + .75 limit;
+Buytocover ("-ERC.below.T2.7pts") From Entry ("(S)ERC<T2") 2 contracts Next Bar at ERCEntry.z - 7 limit;             
+Buytocover ("-ERC.below.T2.14pts") From Entry ("(S)ERC<T2") 2 contracts Next Bar at ERCEntry.z - 14 limit;    
+If S1 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S1") From Entry ("(S)ERC<T2") 1 contracts Next Bar at S1 + .75 limit;      
+If S2 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S2") From Entry ("(S)ERC<T2") 1 contracts Next Bar at S2 + .75 limit;
+If S3 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S3") From Entry ("(S)ERC<T2") 1 contracts Next Bar at S3 + .75 limit;
 
-
-{get safe*******************need safe stops defined in variables, then need some help with this Matt, probably want to take first exit after 3 points, then maybe another 3 pts
+{get safe}
 If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
-And Entryprice - DownsideTarget1  > 1.5 
-then Buytocover ("-ERC.SafeStop.d") From Entry ("((S)ExERC<T2") all contracts next bar at EntryPrice - 3 stop;   
+And ERCEntry.z - Low  > 7 
+then Buytocover ("-ERC.below.T2.SS.a") From Entry ("(S)ERC<T2") all contracts next bar at ERCEntry.z stop;
+End;   
 
-If Currentcontracts < 4
-And Entryprice - DownsideTarget1 <= 1.5 
-then Buytocover ("-ERC.SafeStop.a") From Entry ("(S)(S)ExERC<T2") all contracts next bar at EntryPrice - (DownsideTarget1 -.5 - EntryPrice) +.25 stop;
+{=== END SHORT ERC ENTRIES below Downside Target 2===}
 
-{If Currentcontracts < 4
-then Buytocover ("-ERC.SafeStop.b") From Entry ("(S)(S)ExERC<T2") all contracts next bar at 
 
-If Currentcontracts < 3
-then Buytocover ("-ERC.SafeStop.c") From Entry ("(S)(S)ExERC<T2") all contracts next bar at 
-
-If Currentcontracts < 2
-then Buytocover ("-ERC.SafeStop.d") From Entry ("(S)(S)ExERC<T2") all contracts next bar at} 
-
-{I think something mechanically wrong with this stop Matt, look at 10.15.14 and see what you think}
-//Buytocover ("-ExERC.Stopout.b") From Entry ("(S)ExERC<T2") all contracts Next Bar at EntryPrice + 1  stop;       
-//End;
-{00000000000000=====END Extended GB Range SHORT ERC ENTRIES below Downside Target 2=======00000000000000}
-
-}
 
 Setstoploss (1200);        
 
