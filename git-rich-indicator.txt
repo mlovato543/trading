@@ -3,7 +3,7 @@
 {Matt's Comments: ---}
 {Jeff's Comments: ---}
 
-{----------BEGIN STOCASTICS----------t6estr}
+{----------BEGIN STOCASTICS----------}
 Inputs:
  PriceH( High), 
  PriceL( Low),
