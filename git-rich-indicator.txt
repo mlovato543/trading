@@ -213,25 +213,6 @@ End;
 {-------------------------BEGIN PLOT-------------------------------}
 
 
-{----------BEGIN PLOT TREND----------
-If Trend = 1 and Trend[1] <>1
-then
-Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-If Trend = -1 and Trend[1] <>-1
-then
-Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
-If Trend = 1 and Trend[1] <>1
-then
-Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-If Trend = -1 and Trend[1] <>-1
-then
-Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
-}
-{----------END PLOT TREND----------}
-
-
-
-
 {----------BEGIN PLOT PIVOT POINTS----------}
 if Counter >= 2 and ( BarType < 3 or BarType = 14 ) and time < 1600 then { if at least one full
  day's data has been processed and chart bar interval is daily, intra-day, second
