@@ -1,8 +1,6 @@
-
 {Dad's Comments: ---}
 {Matt's Comments: ---}
 {Jeff's Comments: ---}
-
 {----------BEGIN STOCASTICS----------}
 Inputs:
  PriceH( High), 
@@ -216,25 +214,6 @@ End;
 
 {------------------------------------------------------------------}
 {-------------------------BEGIN PLOT-------------------------------}
-
-
-{----------BEGIN PLOT TREND----------
-If Trend = 1 and Trend[1] <>1
-then
-Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-If Trend = -1 and Trend[1] <>-1
-then
-Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
-If Trend = 1 and Trend[1] <>1
-then
-Value80 = Text_SetColor(Text_new(D,T,High + .5, "Up Bias"),yellow);
-If Trend = -1 and Trend[1] <>-1
-then
-Value81 = Text_SetColor(Text_new(D,T,Low - .5, "Down Bias"),yellow);
-}
-{----------END PLOT TREND----------}
-
-
 
 
 {----------BEGIN PLOT PIVOT POINTS----------}
