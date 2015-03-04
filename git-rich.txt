@@ -1521,7 +1521,6 @@ If S1 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S1") From Entry ("(S)ERC<T2")
 If S2 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S2") From Entry ("(S)ERC<T2") 1 contracts Next Bar at S2 + .75 limit;
 If S3 < ERCEntry.z - 1.5 then Buytocover ("-ERC<T2.S3") From Entry ("(S)ERC<T2") 1 contracts Next Bar at S3 + .75 limit;
 
-
 {get safe}
 If Currentcontracts <> 0
 Then Begin
