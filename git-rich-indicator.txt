@@ -24,7 +24,7 @@ variables:
 Value1 = Stochastic( PriceH, PriceL, PriceC, StochLength, SmoothingLength1,
  SmoothingLength2, SmoothingType, oFastK, oFastD, oSlowK, oSlowD ) ;
 
-{----------END STOCHASTICS----------test}
+{----------END STOCHASTICS----------}
 
 
 
