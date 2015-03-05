@@ -1,4 +1,4 @@
-{2.25.15 Master Code.  3/3/15  thru all but S10s, edited to remove notes, see aaTerminator Master Code Notes}
+{2.25.15 Master Code.  3/3/15  thru all but S10s, edited to remove notes, see aaTerminator Master Code Notes test}
 Inputs:
 L.S10.below.GBH (1),
 L.S10.below.T1 (1),
