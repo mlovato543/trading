@@ -1,4 +1,22 @@
-{2.25.15 Master Code.  3/3/15  thru all but S10s, edited to remove notes, see aaTerminator Master Code Notes test}
+{aaTerminator MASTER CODE rev  3/7/15 11:40  $453,065  1.1.07 to 3.05.15}
+
+{Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
+New Year’s Day                    January 1                         closed
+Marin Luther King Day             3rd Monday in January             10:30
+President’s Day                   3rd Monday in February            10:30
+Memorial Day                      Last Monday in May                noon
+Independence Day                  July 4th                          noon
+Labor Day                         1st Monday in September           noon
+Columbus Day                      2nd Monday in October             full day
+Veterans Day                      November 11th                     full day
+Thanksgiving Day                  4th Thursday in November          noon
+Christmas Day                     December 25th                     closed      
+
+FOMC;    http://www.federalreserve.gov/monetarypolicy/fomccalendars.htm.  On FOMC Statement days stop entering trades at noon, then out of everything at 12:45.  Generally good trading the next day unless there's a wedge on the LT, see 1.30.15 screen shot.
+Non Farm Payroll;     The Bureau of Labor Statistics releases preliminary data on the third Friday after the conclusion of the reference week, i.e., the week which includes the 12th of the month, at 8:30 a.m. Eastern Time;[5] typically this date occurs on the first Friday of the month. Nonfarm payroll is included in the monthly Employment Situation or informally the jobs report and affects the US dollar, the Foreign exchange market, the bond market, and the stock market
+Contract Roller;   load dates from this site:   http://www.cmegroup.com/trading/equity-index/us-index/e-mini-sandp500_product_calendar_futures.html roll over alert on the weekend and expect choppy trading prior}
+
+
 Inputs:
 L.S10.below.GBH (1),
 L.S10.below.T1 (1),
@@ -384,39 +402,16 @@ Then S10TrendCount = S10TrendCount + 1;
 If S10 < S10[1]
 Then S10TrendCount = S10TrendCount - 1;
 
-{Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
-New Year’s Day                    January 1                         closed
-Marin Luther King Day             3rd Monday in January             10:30
-President’s Day                   3rd Monday in February            10:30
-Memorial Day                      Last Monday in May                noon
-Independence Day                  July 4th                          noon
-Labor Day                         1st Monday in September           noon
-Columbus Day                      2nd Monday in October             full day
-Veterans Day                      November 11th                     full day
-Thanksgiving Day                  4th Thursday in November          noon
-Christmas Day                     December 25th                     closed      
-
-FOMC;    http://www.federalreserve.gov/monetarypolicy/fomccalendars.htm.  On FOMC Statement days stop entering trades at noon, then out of everything at 12:45.  Generally good trading the next day unless there's a wedge on the LT, see 1.30.15 screen shot.
-Non Farm Payroll;     The Bureau of Labor Statistics releases preliminary data on the third Friday after the conclusion of the reference week, i.e., the week which includes the 12th of the month, at 8:30 a.m. Eastern Time;[5] typically this date occurs on the first Friday of the month. Nonfarm payroll is included in the monthly Employment Situation or informally the jobs report and affects the US dollar, the Foreign exchange market, the bond market, and the stock market
-Contract Roller;   load dates from this site:   http://www.cmegroup.com/trading/equity-index/us-index/e-mini-sandp500_product_calendar_futures.html roll over alert on the weekend and expect choppy trading prior}
 
 
+{*************************** WARNING -  FOR THIS TRADE YESTERDAY'S CLOSE MUST BE ABOVE THE 50MA ON THE DAILY CHART TO TRADE TODAY}
 
-{1.  for S10<GBH trades we have 8 full stop outs and 5 nearly full stop outs over 2 years, (I've emailed a snap shot each stop out:  12.28.12, 2.04.13, 8.30.13, 9.03.13, 9.19.13, 5.14.14, 8.22.14 the S10 is very weak or flat, (and below BL in some cases), and while the S10 is up momentarily, the recent history is down or flat, can you figure out how to exclude momentary up angle on S10 when in otherwise down move? If recent history is shitty, maybe want to shorten first target to the BL???}
-{2.  1/2/15    Matt can you test "And Bounceline - Entryprice > 2" for this stop out?  BTW we have same condition coming up in next secton in (S10<T1) which was the only stop out in two years and a few more in (S10>T2) }
-{3.  our STOP at a violation of GBL, wonder if you try adding, "if entry price is > BL +1, stopout is BL -2 (or whatever optomizes), in place of "GBL"?}
-{4.  see note below around line 413}
-{5.  see note below around line 440}
-{6.  see note below around line 449}
-
-{7 yr test:  Master        2014 37,537  1677 @ 62%           2014-13 Code:  Master    2014}
 {===============LONG S10 ENTRIES below Globex High, (S10<GBH) Master===============}
 If L.S10.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1445                                            {Master, changed time, picke up 3k}
+And Time < 1445                                            
 And GlobexHigh - Bounceline > 3
-//And PP < GlobexHigh                                      {Master, turned this off, picked up 3k}
 And (Highest (high,5) - Low < 3.5 or S10> S10[1]+.55)
 And Highest (high,5) - Low > 1
 And Low[1] >= S10 [1]
@@ -426,17 +421,9 @@ And AbsValue((Highest (high,10)- GlobexHigh)) > 0.5
 And AbsValue((Highest (high,10)- PP)) > 0
 And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
-And LTopen > S10_30 - 4                                    {Master opt 2.12.15 CHGD FROM -5 TO -.5}
-And AbsValue (PP - Close) > .5                             {Master optimized,  2012  I don't want PP too close to my entry 1.23.15}	
-//And YestClose > S50  -1                     {need it to be the S50 AT YESTERDAY'S CLOSE}
-And S10_30 > S10_30 [1] - .25                              {Master opt has not effect}
-//And MyMACD_30 > + .2                                     {Master, opt  no help  2.12.15 no help from this line}
-//And S10 > S10[1]                                         {master, optomized, no help   2012 added 1.23.15}	
-//And (Bounceline - close) > 0                             { THIS CRUSHES PROFITS  added 1.23.15 I don't remember why I put this in but it adds 3k but keeps me out of trade on 5.22 at 9.00 and 9.06 at 8.30 and 12.5 , and into stop outs on 7.11,8.2,8.28}              
-//And AbsValue(GlobexLow - Close) > .5                     {Master turned off  2.12.15 TURNED THIS LINE OFF, GAINED $4K}
-
-
-
+And LTopen > S10_30 - 4                                   
+And AbsValue (PP - Close) > .5                             
+And Highest (Close, 20) - Lowest (Close, 20) > 3.25       
  
  Then begin
  Buy ("(L)S10<GBH") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -445,19 +432,18 @@ And S10_30 > S10_30 [1] - .25                              {Master opt has not e
 
 {scale out}
 Sell ("+S10.GH.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at GlobexHigh - .5 limit;
-Sell ("+S10.T1.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at UpsideTarget1 - .5 limit;                            {2.12.15 CHGD FROM .5 TO .75}
-Sell ("+S10.T2.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at UpsideTarget2 - .5 limit;
-//Sell ("+S10.10pointer.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at S10Entry.a + 10 limit;                     {Master, not optomized but just starting off took a 7k hit  2008 added this line 1.23.15}   
+Sell ("+S10.T1.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at UpsideTarget1 - .5 limit;                           
+Sell ("+S10.T2.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at UpsideTarget2 - .5 limit; 
 If R1 > GlobexHigh + 1.5 then Sell ("+S10.R1.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at R1 - .5 limit;                
 If R2 > UpsideTarget1 + 1.5 then Sell ("+S10.R2.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at R2 - .75 limit;
 If R3 > UpsideTarget2 + 1.5 then Sell ("+S10.R3.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at R3 - .75 limit;
-{If (Bounceline - Entryprice) > 4 then Sell 1 contracts Next Bar at Bounceline - .75 limit;}       {******Matt, taking an S10 way below Bounceline which is counter trend,  we should get safe at BL but we take a huge hit with this code I wrote, can you see if you can come up with something cuz we do have a bunch of stop outs}   
 
-{Globex Low stop}
+{Globex Low}
 If S10Entry.a > GlobexLow + 1
 And S10Entry.a - Close < 2
 then
-Sell ("+S10.GBL.stop") From Entry ("(L)S10<GBH") all contracts Next Bar at GlobexLow - .25 stop;                           {opened this stop up on 1.23.15}           
+Sell ("+S10.GBL.stop") From Entry ("(L)S10<GBH") all contracts Next Bar at GlobexLow - .25 stop;                                    
+//If (High - Close) > +7 Then Sell ("+S10.OShit!") From Entry ("(L)S10<GBH") all contracts Next Bar at Market;                                        
 
 {S10 PreHook}
 If High < S10 
@@ -469,40 +455,35 @@ If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
 And GlobexHigh - Entryprice > 2.25 
-then Sell ("+S10.SafeStop.a") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice -.75 stop;                                          {2.12.15 CHAGD FROM -.75 TO +1.5}
+then Sell ("+S10.SafeStop.a") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice -.75 stop;                                         
 If Currentcontracts < 4
 And GlobexHigh - Entryprice <= 2.25 
-then Sell ("+S10.SafeStop.b") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice - (GlobexHigh -.5 - EntryPrice) +.25 stop;           {2.12.15 CHAGD  TO +.75}
+then Sell ("+S10.SafeStop.b") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice - (GlobexHigh -.5 - EntryPrice) +.25 stop;          
 If Currentcontracts < 3
 And Close[1]> open[1] 
 And Close < Low[1]
 And Close < S19 
 then Sell ("+S10.SafeStop.c") From Entry ("(L)S10<GBH") all contracts next bar at S19- 1 stop;
-{ **************NOTE: attempts to put in this < 4 code reduces profits, not sure why.  If Currentcontracts < 4              {***********matt, check this note out}
+{ **************NOTE: attempts to put in this < 4 code reduces profits, not sure why.  If Currentcontracts < 4             
 then Sell ("+S10.SafeStop.d") From Entry ("(L)S10<GBH") all contracts next bar at GlobexHigh - 6 stop; }  
 If Currentcontracts < 3
-then Sell ("+S10.SafeStop.e") From Entry ("(L)S10<GBH") all contracts next bar at GlobexHigh - 2.5 stop;                      {2.12.15 OPEN STOP FM +.75 TO - 2.5}  
+then Sell ("+S10.SafeStop.e") From Entry ("(L)S10<GBH") all contracts next bar at GlobexHigh - 2.5 stop;                      
 If Currentcontracts < 2
 then Sell ("+S10.SafeStop.f") From Entry ("(L)S10<GBH") all contracts next bar at UpsideTarget1 +.50 stop;    
 
 {stop out}
-Sell ("+S10<GBH.Stopout") From Entry ("(L)S10<GBH") all contracts Next Bar at EntryPrice - 6 stop;                      {Master Opt  7k difference opening stop 1 tick, or are we into the master stop out? 2008 2.12.15 TIGHTEN STOP FROM -5.75 TO 3.75}   
+Sell ("+S10<GBH.Stopout") From Entry ("(L)S10<GBH") all contracts Next Bar at EntryPrice - 6 stop;                       
 End;
 {===============END LONG S10 ENTRIES below Globex High===============}
 
 
 
 
-
-{2.  ************6.25.13  huge stop which is really the only bad trade in last two years, 
-only suggestion I can think of is, "if entry and BL or GH is <1 pt from entry, get out if thta level doesn't hold"}
-{3.  *************look at 2.3.15 at 9am, big stop out, I added line 474 "and my macd 30. . . . ." but for some reason it's not doing anything, can you check?}
-{7 year test:  Master 5635 456 @ 69%           2014 -3571  520 67%             2014-13 Test:   Master                 2014  }
 {===============LONG S10 ENTRIES below Upside Target 1, (S10<T1)===============}
 If L.S10.below.T1 = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1415                                                   
 And (Highest (high,5) - Low < 3.5 or S10> S10[1]+.35)
 And Low[1] >= S10 [1]
 And (low[2] >= S10 [2] or (AbsValue(PredictedS10 - GlobexHigh) < 1.25 and S10> S10[1]+.45)) 
@@ -510,13 +491,14 @@ And S10TrendCount >0
 And AbsValue(Highest(high,4) - R1) > .5
 And (SessionHigh < UpsideTarget1 - .5 or S10> S10[1]+.45)
 And AbsValue((Highest (high,10)- GlobexHigh))>2
-And S10 > S10[1]+ .5                                                {Master opt, 2008 2.12.15  TIGHTEN THIS UP FROM .3 TO 1.}
-And LTOpen > S10_30                                              {Master opt AT 0. +10 is 2678 profit, 78 trades, comment out 2974 595 trades   2008 2.12.15 HAS NO EFFECT}              
+And S10 > S10[1]+ .5                                                
+And LTOpen > S10_30                                                             
 And MyMACD > .1
 And MyMACD_30 > 0                  
 And PredictedS10 + S10Range < UpsideTarget1 - 1
 And PredictedS10 + S10Range >= GlobexHigh -1 
 And AbsValue(PP - Bounceline) > .5
+And Highest (Close, 10) - Lowest (Close, 10) > 4                  
  
 Then begin
 Buy ("(L)S10<T1") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -524,9 +506,9 @@ S10Entry.b= PredictedS10 + S10Range;
 End;
 
 {scale out}
-Sell ("+S10.T1.b") From Entry ("(L)S10<T1") 2  contracts Next Bar at UpsideTarget1 - .5 limit;                  {Master opt,   2008  2.12.15 CHANGED THIS TO ONE CONTRACT}  
+Sell ("+S10.T1.b") From Entry ("(L)S10<T1") 2  contracts Next Bar at UpsideTarget1 - .5 limit;                  
 Sell ("+S10.T2.b") From Entry ("(L)S10<T1") 1 contracts Next Bar at UpsideTarget2 - .5 limit;
-Sell ("+S10.10pointer.b") From Entry ("(L)S10<T1") 1 contracts Next Bar at S10Entry.b + 10 limit;             {changed to 5 pts on 1.23.15}  
+Sell ("+S10.10pointer.b") From Entry ("(L)S10<T1") 1 contracts Next Bar at S10Entry.b + 10 limit;             
 
 {stop out}
 If S10Entry.b > Bounceline then
@@ -545,24 +527,24 @@ And UpsideTarget1 - Entryprice > 1.5
 then Sell ("+S10.SafeStop.g") From Entry ("(L)S10<T1") all contracts next bar at EntryPrice + .25 stop;
 If Currentcontracts < 4
 And UpsideTarget1 - Entryprice <= 1.5 
-then Sell ("+S10.SafeStop.h") From Entry ("(L)S10<T1") all contracts next bar at EntryPrice - (UpsideTarget1 + 1 - EntryPrice) +.25 stop;               {changed to 1.25 on 1.23.15} 
+then Sell ("+S10.SafeStop.h") From Entry ("(L)S10<T1") all contracts next bar at EntryPrice - (UpsideTarget1 + 1 - EntryPrice) +.25 stop;              
 If Currentcontracts < 3
 then Sell ("+S10.SafeStop.i") From Entry ("(L)S10<T1") all contracts next bar at UpsideTarget1 - 4.5 stop;
 If Currentcontracts < 2
 then Sell ("+S10.SafeStop.j") From Entry ("(L)S10<T1") all contracts next bar at UpsideTarget1 - 1 stop;
 
 {stop out}
-Sell ("+S10<T1.Stopout") From Entry ("(L)S10<T1") all contracts Next Bar at EntryPrice - 5.75 stop;                      {Master, opt 5.75 2.12.15 ADDED THIS STOP, THERE WAS NONE IN MASTER CODE} 
+Sell ("+S10<T1.Stopout") From Entry ("(L)S10<T1") all contracts Next Bar at EntryPrice - 5.75 stop;                      
 End;
 {===============END LONG S10 ENTRIES below Upside Target 1===============}
 
 
-{7 year test:  Master 13650  130  81%      2014 13650  130  81%             2014-13 Test:   Master                 2014  }
+
 {===============LONG S10 ENTRIES below Upside Target 2, (S10<T2)Master===============}
 If L.S10.below.T2 = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430                                                  {Master, opt}                                           
+And Time < 1430                                                                                          
 And S10> S10[1]+.1
 And (Highest (high,5) - Low < 3.5 or S10> S10[1]+.55)
 And Low[1] >= S10 [1]
@@ -572,9 +554,9 @@ And AbsValue(PP - Bounceline) > .5
 And SessionHigh < UpsideTarget2 - 1
 And PredictedS10 + S10Range < UpsideTarget2 - 2
 And PredictedS10 + S10Range >= Upsidetarget1 -.25 
-And MyMACD > .1                                                   {Master opt, 2008 2.12.15 NO EFFECT  }
-//And AbsValue(UpsideTarget1 - Close) > .25                       {Master ineffective,  2012 added this line on 1.23.15}  
- 
+And MyMACD > .1                                                   
+And Highest (Close, 20) - Lowest (Close, 20) > 4                  
+
 Then begin
 Buy ("(L)S10<T2") 4 contracts next bar at PredictedS10 + S10Range limit;
 S10Entry.c= PredictedS10 + S10Range;
@@ -610,23 +592,18 @@ Sell ("+S10<T2.Stopout") From Entry ("(L)S10<T2") all contracts Next Bar at S10E
 
 
 
-{*****************3.5.13 and 3.28.14 at 11.30 and 12.11.14 at 12.10.  the S10 is flat for hours prior to this little move up but I see good trades with this characteric too, not sure if we can do anything with this}
-{******************no surprise, these trades are taken later in the day and typically go a short distance before end of day or they come back on our safe stops.  Probably the first trades to turn off if we getinto a downtrend}
-{7 year test:  Master 30157  346  78%          2014 28855  359 78%             2014-13 Test:   Master                 2014  }
 {===============LONG S10 ENTRIES above Upside Target 2, (S10>T2) Master===============}
 If L.S10.above.T2 = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430                                           {Master opt 1430  }
+And Time < 1430                                          
 And Low[1] >= S10 [1]
 And Close - PredictedS10 + S10Range < 2
 And Open - Close < 2
-And SessionHigh > UpsideTarget2 + 5                       {Master opt at 5, 2008 2.12.15 CHGD FROM 5 TO 1}   
+And SessionHigh > UpsideTarget2 + 5                      
 And PredictedS10 + S10Range >= Upsidetarget2 -.25               
-And LTopen > S10_30 + 1                                   {Master opt +1,  2008  2.12.15 ADDED THIS LINE}
-//And MyMACD > - .2                                       {Master ineffective,  2012 added this line on 1.23.15}
-//And S10 > S10[1] - 6	                                  {Master, ineffective, 2012  added this line on 1.23.15}
-//And Highest(high,5) > R2 								  {Master huge hit, deleted, added this line on 1.23.15 but lost a little money, tryon on big code}
+And LTopen > S10_30 + 1                                   
+And Highest (Close, 20) - Lowest (Close, 20) > 5         
  
 Then begin
 Buy ("(L)S10>T2") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -635,7 +612,7 @@ End;
 
 {scale out}
 Sell ("+S10>T2.a") From Entry ("(L)S10>T2") 2 contracts Next Bar at S10Entry.d + 3 limit;
-Sell ("+S10.12pointer.d") From Entry ("(L)S10>T2") 1 contracts Next Bar at S10Entry.d + 12 limit;                  {Master opt,  2008 2.12.15 CHGD FROM 10 TO 4}  
+Sell ("+S10.12pointer.d") From Entry ("(L)S10>T2") 1 contracts Next Bar at S10Entry.d + 12 limit;                 
 
 {S10 PreHook}
 If High < S10 
@@ -652,11 +629,11 @@ then Sell ("+S10.SafeStop.q") From Entry ("(L)S10>T2") all contracts next bar at
 End;
 
 {stop out}
-Sell ("+S10>T2.Stopout") From Entry ("(L)S10>T2") all contracts Next Bar at S10Entry.d - 5.5 stop;                   {Master, opt  2012 changed from 5.5 to 3 on 1.23.15}
+Sell ("+S10>T2.Stopout") From Entry ("(L)S10>T2") all contracts Next Bar at S10Entry.d - 5.5 stop;                  
 {===============END LONG S10 ENTRIES above Upside Target 2===============}
  
  
- {***********matt, a couple stop outs had large red ERC, (see note below), as either the trigger candle or the candle before the trigger, not having any luck with this code removing these trades. Wrote this line, And Open - Close [2] < 2, didn't help.   I did optomize the trigger candle, came out to 3 pts but lost a little money, try 12.12.12 amd 3.1.13 and 4.17.13 and 6.20.13, look down in Scale Outs for additional notes}
+ 
 {===============LONG SCALP ENTRIES  Master===============}
 If L.Scalp = 1
 And Marketposition = 0
@@ -671,14 +648,13 @@ And Bounceline - GlobexLow > 4
 And S10_30 > S10_30[1] - .2                         
 And MyMACD > - .3									                                   
 And (Lowest (low, 5) > GlobexLow - 1.25 or lowest (close,5) > GlobexLow)  
-And Close > S1                                                   
+And Close > S1                                             
   
 Then begin
 Buy ("(L)Scalp") 4 contracts next bar at GlobexLow + 1.25 limit;                     
 End;  
  
-{scale out}
-//Sell ("+Scalp.BL") From Entry ("(L)Scalp") 1 contracts Next Bar at Bounceline - .5 limit;                                                             
+{scale out}                                                            
 Sell ("+Scalp.GH") From Entry ("(L)Scalp") 1 contracts Next Bar at GlobexHigh - .5 limit;                                                                                                 
 Sell ("+Scalp.T1") From Entry ("(L)Scalp") 1 contracts Next Bar at UpsideTarget1 - .5 limit;
 Sell ("+Scalp.T2") From Entry ("(L)Scalp") 1 contracts Next Bar at UpsideTarget2 - .75 limit;
@@ -690,7 +666,6 @@ If AbsValue(PP - Bounceline) < 1 Then Sell ("+Scalp.PP.a") From Entry ("(L)Scalp
 If AbsValue(PP - GlobexHigh) < 1.25 Then Sell ("+Scalp.PP.b") From Entry ("(L)Scalp")  all contracts next bar at GlobexHigh -.75 limit;
 If AbsValue(PP - UpsideTarget1) < 1.25 Then Sell ("+Scalp.PP.c") From Entry ("(L)Scalp")  all contracts next bar at UpsideTarget1 -.75 limit;
 If AbsValue(PP - UpsideTarget2) < 1.25 Then Sell ("+Scalp.PP.d") From Entry ("(L)Scalp")  all contracts next bar at UpsideTarget2 -.75 limit;
-//If Open - Close > 3.25 Then Sell ("Red ERC") From Entry ("(L)Scalp") all contracts Next Bar - .5 limit;                           {*****matt, many of the stop outs had a big red ERC just after entry, this code worked but didn't save any money, so some good trades had big ERCs I guess}
 
 {get safe}
 If Currentcontracts <> 0
@@ -707,12 +682,12 @@ End;
 Sell ("+Scalp.Stopout") From Entry ("(L)Scalp") all contracts Next Bar at GlobexLow - 4.5 stop;           
 {===============END LONG SCALP ENTRIES===============} 
 
-  
-{===============LONG BOUNCE ENTRY (L)BL master code ===============}
+ 
+{===============LONG BOUNCE ENTRY (L)BL Master===============}
 If L.BL = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1430                                          
 And Open > Bounceline
 And Close > Bounceline -.5
 And High - Close < 3
@@ -722,8 +697,8 @@ And Highest (high, 20) < UpsideTarget1 - 1
 And Lowest (low, 20) > Bounceline - .75
 And GlobexHigh - Bounceline > 2.5             
 And MyMACD > - .5                              
-And LTopen > S10_30 - 1					      
-And LTopen > S10_30 - 1					        							
+And LTopen > S10_30 - 1					      	
+And Highest (Close, 10) - Lowest (Close, 10) > 1        				        							
  
 Then begin
 Buy ("(L)BL") 4 contracts next bar at Bounceline + .75 limit;
@@ -742,6 +717,7 @@ If R3 > UpsideTarget2 Then Sell ("+BL.R3") From Entry ("(L)BL") 1 contracts Next
 If AbsValue(PP - GlobexHigh) < 1.25 Then Sell ("+BL.PP.a") From Entry ("(L)BL")  all contracts next bar at GlobexHigh -.75 limit;
 If AbsValue(PP - UpsideTarget1) < 1.25 Then Sell ("+BL.PP.b") From Entry ("(L)BL")  all contracts next bar at UpsideTarget1 -.75 limit;
 If AbsValue(PP - UpsideTarget2) < 1.25 Then Sell ("+BL.PP.c") From Entry ("(L)BL")  all contracts next bar at UpsideTarget2 -.75 limit;
+If (High - Close) > + 4  then  Sell ("+S10.RedERC") From Entry ("(L)BL") all contracts Next Bar at Market;                                         
 
 {get safe}
 If Currentcontracts <> 0
@@ -764,7 +740,7 @@ Sell ("+BL.Stopout") From Entry ("(L)BL") all contracts Next Bar at Bounceline -
 If L.Z_GBH = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1430                                        
 And Close >= GlobexHigh   
 And Low >= GlobexHigh -.75                               	 
 And High - Close < 2
@@ -779,7 +755,7 @@ And LTopen > S10_30 - 1
 And MyMACD_30 > -.4                                      
 And MyMACD > -.4
 And AbsValue(PP - GlobexHigh) > 1                        
-And Highest(high,10) < UpsideTarget1 - 2                 
+And Highest(high,10) < UpsideTarget1 - 2              
                                                                  
 Then begin
 Buy ("(L)Z-GBH") 4 contracts next bar at GlobexHigh + 0.75 limit;
@@ -793,7 +769,6 @@ If PP > GlobexHigh + 2.25 Then Sell ("+Z-GBH.PP") From Entry ("(L)Z-GBH") 1 cont
 If R1 > UpsideTarget1 Then Sell ("+Z-GBH.R1") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R1 - .5 limit;			
 If R2 > GlobexHigh + .75 and S10 < GlobexHigh Then Sell ("+Z-GBH.R2") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R2 - .5 limit;	            
 If R3 > GlobexHigh + .75 Then Sell ("+Z-GBH.R3") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R3 - .75 limit;							
-//If Close < S10 Then Sell ("+Z-S10stop") From Entry ("(L)Z-GBH") all contracts Next Bar at - .75 limit;   					{************matt, look at 3.20.13, we have pretty big stop on this trade and see where we could have gotten out much sooner when we fail to hold the S10, there's pretty some code we can use to help here, this one does nothing}
 
 {get safe}
 If Currentcontracts <> 0
@@ -815,11 +790,11 @@ Sell ("+Z-GBH.Stopout") From Entry ("(L)Z-GBH") all contracts Next Bar at Globex
 
 
 
-{===============LONG Z-PATTERN Bounceline ENTRY (L)Z-BL MasterCode ===============}
+{===============LONG Z-PATTERN Bounceline ENTRY (L)Z-BL Master===============}
 If L.Z_BL = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1430                                   
 And Open >= Bounceline
 And Open < Bounceline + 2.5           
 And Close > Bounceline
@@ -839,8 +814,8 @@ And LTopen > S10_30 - 2
 And MyMACD_30 > - .2                                              
 And MyMACD > - .1
 And (PP < Bounceline +.75 or PP - (Bounceline + .75) > 1)         
-And Highest(high,10) < GlobexHigh + .25                             
-
+And Highest(high,10) < GlobexHigh + .25 
+And Highest (Close, 10) - Lowest (Close, 10) > 3                                 
  
 Then begin
 Buy ("(L)Z-BL") 4 contracts next bar at Bounceline + 0.75 limit;
@@ -890,7 +865,7 @@ And MyMACD > + .1
 And AbsValue(Highest(high,5) - GlobexHigh) > .75
 And AbsValue(Highest(high,5) - Bounceline) > .75
 And (PP - Close) > 1.5
-
+And Highest (Close, 10) - Lowest (Close, 10) > 4          
      
 Then begin
 Buy ("(L)ERC<GBH") 4 contracts next bar at Close - .75 limit;
@@ -905,7 +880,7 @@ Sell ("+ERC.T2.a") From Entry ("(L)ERC<GBH") 1 contracts Next Bar at UpsideTarge
 {S10 PreHook}
 If High < S10 
 and (Close < Open - .5 or time > 1430 or High - Close > 1)
-then sell ("+ERC.pre-hook.a") from Entry ("(L)ERC<GBH") all contracts next bar at PredictedS10 limit;            {******************This has NOT been optomizede}   
+then sell ("+ERC.pre-hook.a") from Entry ("(L)ERC<GBH") all contracts next bar at PredictedS10 limit;            
 
 {get safe} 
 If Currentcontracts <> 0
@@ -974,7 +949,7 @@ Sell ("+ERC<GBH.Stopout") From Entry ("(L)ERC<GBH") all contracts Next Bar at ER
 {000000000000000000000000000000000000000000000000000000000000000000000000000000=======SHORT ENTRIES=======00000000000000000000000000000000000000000000000000000000000000000}
 
 
-{000000000000000000000=======SHORT SCALP ENTRY (S)Scalp  Master =======000000000000000000}
+{000000000000000000000=======SHORT SCALP ENTRY (S)Scalp=======000000000000000000}
 If S.Scalp = 1
 And Marketposition = 0
 And time > 830
@@ -983,7 +958,8 @@ And GlobexHigh - Bounceline > 2
 And Close <= GlobexHigh - .5
 And Highest (high,3) > GlobexHigh + .25 
 And MyMACD_30 < + 1                                            
-And LTopen < S10_30 + 8   						                
+And LTopen < S10_30 + 8  
+And Highest (Close, 5) - Lowest (Close, 5) > 1                     						                
 
 Then begin
 Sellshort ("(S)Scalp") 4 contracts next bar at GlobexHigh - .75 limit;
@@ -1027,7 +1003,8 @@ And Lowest(low,10) > DownsideTarget1 + .5
 And AbsValue(PP - GlobexLow) > 1.25
 And (Bounceline - GlobexLow > 2.5)                    
 And MyMACD_30 < - .7                                          
-And S10_30 < S10_30[1]                                        
+And S10_30 < S10_30[1]
+And Highest (Close, 10) - Lowest (Close, 10) > 6                    	                                        
   
 Then begin
 Sellshort ("(S)BL") 4 contracts next bar at Bounceline -.75 limit;  
@@ -1059,7 +1036,7 @@ Buytocover ("-BL.Stopout") From Entry ("(S)BL") all contracts Next Bar at Bounce
 
 
 
-{00000000000000========SHORT Z-PATTERN Bounceline ENTRY (S)Z-BL Master ======00000000000}
+{00000000000000========SHORT Z-PATTERN Bounceline ENTRY (S)Z-BL Master======00000000000}
 If S.Z_BL = 1
 And Marketposition = 0
 And Time >= 825 
@@ -1074,9 +1051,9 @@ And AbsValue(PP - GlobexLow) > 3
 And LTopen < S10_30 +.1                                   
 And S10 < S10[1]                                          
 And MyMACD < -.3                                                                           
-And (Bounceline - S1) > 3                               
+And (Bounceline - S1) > 3                                      
 And MyMACD_30 < 0                                      
-And S10_30 < S10_30[1] +.1                                   
+And S10_30 < S10_30[1] +.1                          
        
 Then begin
 Sellshort ("(S)Z-BL") 4 contracts next bar at Bounceline - .75 limit;
@@ -1088,11 +1065,11 @@ Buytocover ("-(S)Z-BL.T2") From Entry ("(S)Z-BL") 1 contracts Next Bar at Downsi
 Buytocover ("-Z-BL.15pointer") From Entry ("(S)Z-BL") 2 contracts Next Bar at Bounceline - 15 limit;
 If S2 < DownsideTarget1 Then Buytocover ("-(S)Z-BL.R2") From Entry ("(S)Z-BL") 1 contracts Next Bar at S2 + .75 limit;            
 If S3 > DownsideTarget2 Then Buytocover ("-(S)Z-BL.R3") From Entry ("(S)Z-BL") 1 contracts Next Bar at S3 + .75 limit;
-//If S1 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S1") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S2 + .50 limit;        {*************the following 4 lines have not been tried yet but were in the 2008 code Master, didn't try these.   2008 Code  2.12.15 ADDED THIS LINE}
+//If S1 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S1") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S2 + .50 limit;       
 //If S2 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S2") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S2 + .50 limit;   
 //If S3 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S3") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S3 + .50 limit;
 //If PP < DownsideTarget2 Then Buytocover ("-(S)Z-BL.PP") From Entry ("(S)Z-GBL") 2 contracts Next Bar at PP + .75 limit;
-
+If (Close - Low) > + 5  Then Buytocover ("(S)Z-BL.GreenERC") From Entry ("(S)Z-BL") all contracts Next Bar at Market;           
 
 {get safe}
 If Currentcontracts <> 0
@@ -1115,7 +1092,7 @@ Buytocover ("-(S)Z-BL.Stopout") From Entry ("(S)Z-BL") all contracts Next Bar at
 If S.Z_GBL = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1430                                                
 And Open < GlobexLow + .75
 And Close < GlobexLow
 And High > GlobexLow - 1
@@ -1129,7 +1106,8 @@ And (S10 > GlobexLow + 1)
 And Lowest(low,5) > DownsideTarget1 +.25	           
 And LTopen < S10_30                                    
 And S10_30 < S10_30[1]                                                              
-And MyMACD_30 < +.2                                    
+And MyMACD_30 < +.2  
+And Highest (Close, 5) - Lowest (Close, 5) > 2                   	                                   
 
 Then begin
 Sellshort ("(S)Z-GBL") 4 contracts next bar at GlobexLow - .75 limit;
@@ -1159,32 +1137,31 @@ Buytocover ("-Z-GBL.Stopout") From Entry ("(S)Z-GBL") all contracts Next Bar at 
 
 
 
-{*************Matt, on 2/4/15 we went short right into BL as price crossed above BL for this set up, probably ought to put in a restriction}
-{7 year test:  Master          2014 222  417 71%             2014-13 Test:   Master                 2014  }
-{00000000000000========SHORT S10 ENTRY above Globex Low, (S10>GBL) ======000000000000000}
+{00000000000000========SHORT S10 ENTRY above Globex Low, (S10>GBL) Master======000000000000000}
 If S.S10.below.GBL = 1
 And Marketposition = 0 
 And Time >= 825 
-And Time < 1430                 {***********matt, look at 12.12.14, I've seen a number of trades where it looks like we might adjust the time to stay in until 1455 but on this trade the exits not moving}
+And Time < 1445                                                   
 And S10 < S10[1] - .48
-And Bounceline - GlobexLow > 3                                 {2.12.15  OPTOMIZED}
+And Bounceline - GlobexLow > 3                                  
 And PP > DownsideTarget1                            
 And (High - lowest(low,5) < 3.5 or S10< S10[1]-.55)
 And high <= S10
 And high[1] <= S10 [1]
 And high[2] <= S10 [2]
 And S10TrendCount < -4 
-//And LTOpen < S10_30                                    {2.12.15 ADDED THIS LINE}
-//And S10_30 < S10_30 [1] + .1                           {2.12.15 ADDED THIS LINE}
+And LTOpen < S10_30 + 3                                          
+And S10_30 < S10_30 [1]                                          
 And AbsValue((lowest (low,10)- Globexlow)) > 0.5
 And AbsValue((lowest (low,10)- PP)) > 0
 And AbsValue (Lowest(low,5) - S1) > .25
 And AbsValue (Lowest(low,5) - S2) > .25
-And AbsValue (Lowest(low,5) - S3) > .25
+And AbsValue (Lowest(low,5) - S3) > .25	
 And Lowest (oSlowD,5) > 10
-And Close < Bounceline                                       {added " -2 "  on 1.23.15}
+And Close < Bounceline                                            
 And PredictedS10 < GlobexHigh
 And PredictedS10 - S10Range > GlobexLow + 1
+ 
 
 Then begin
 Sellshort ("(S)S10>GBL") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1195,7 +1172,7 @@ End;
 Buytocover ("-S10.GBL.e") From Entry ("(S)S10>GBL") 1 contracts Next Bar at GlobexLow + .5 limit;
 Buytocover ("-S10.T1.e") From Entry ("(S)S10>GBL") 1 contracts Next Bar at DownsideTarget1 + .5 limit;
 Buytocover ("-S10.T2.e") From Entry ("(S)S10>GBL") 1 contracts Next Bar at DownsideTarget2 + .5 limit; 
-//Buytocover ("-S10>GBL12pointer") From Entry ("(S)S10>GBL") 1 contracts Next Bar at GlobexLow - 12 limit;             {2.12.15 ADDED THIS LINE}    
+Buytocover ("-S10>GBL10pointer") From Entry ("(S)S10>GBL") 1 contracts Next Bar at GlobexLow - 10 limit;             
 
 {S10 PreHook}
 If Low > S10            
@@ -1205,34 +1182,35 @@ then Buytocover ("-S10 pre-hook.e") from Entry ("(S)S10>GBL") all contracts next
 {get safe}
 If Currentcontracts <> 0
 Then Begin
-If Currentcontracts < 4
+If Currentcontracts < 4 
 And S10Entry.e - GlobexLow > 2.25 
-then Buytocover ("-S10.SafeStop.a") From Entry ("(S)S10>GBL") all contracts next bar at S10Entry.e + 2 stop;
+then Buytocover ("-S10.SafeStop.a") From Entry ("(S)S10>GBL") all contracts next bar at S10Entry.e + 3 stop;
 {If Currentcontracts < 4
-then Buytocover ("-S10.SafeStop.b") From Entry ("(S)S10>GBL") all contracts next bar at GlobexLow   + 7 stop; }               {******matt, look at 10.27.14,  weird, if I use 7 as a stop out, I get better results if I comment out this line, why}
+then Buytocover ("-S10.SafeStop.b") From Entry ("(S)S10>GBL") all contracts next bar at GlobexLow   + 7 stop; }            
 If Currentcontracts < 3
-then Buytocover ("-S10.SafeStop.c") From Entry ("(S)S10>GBL") all contracts next bar at GlobexLow    + .50 stop;
+then Buytocover ("-S10.SafeStop.c") From Entry ("(S)S10>GBL") all contracts next bar at DownsideTarget1    + 4.5 stop;            
 If Currentcontracts < 2
-then Buytocover ("-S10.SafeStop.d") From Entry ("(S)S10>GBL") all contracts next bar at DownsideTarget1   -.5 stop;
+then Buytocover ("-S10.SafeStop.d") From Entry ("(S)S10>GBL") all contracts next bar at DownsideTarget1    - 1.5 stop;             
 End;
  
 {stop out}
-Buytocover ("-S10.Stopout.a") From Entry ("(S)S10>GBL") all contracts Next Bar at S10Entry.e + 6 stop;                        {2.12.15 TIGHTENED STOP FROM 5 TO 3.5}
+Buytocover ("-S10.Stopout.a") From Entry ("(S)S10>GBL") all contracts Next Bar at S10Entry.e + 5.25 stop;                       
 {00000000000000=====END SHORT S10 ENTRIES above Globex Low=======00000000000000}
 
 
-{7 year test:  Master          2014 11431  494 79%             2014-13 Test:   Master                 2014  }
-{00000000000000000=====SHORT S10 ENTRIES above Downside Target 1 (S10>T1)=======000000000000000}
+
+{00000000000000000=====SHORT S10 ENTRIES above Downside Target 1 (S10>T1) Master=======000000000000000}
 If S.S10.above.T1 = 1
 And Marketposition = 0 
 And Time >= 825 
-And Time < 1430                                  {***********Matt, again trying to optomize the time we quite at, maybe a bug here, no change on the chart but the numbers change}
+And Time < 1345                                                   
 And S10 < S10[1]
 And (PP < GlobexLow or PP > UpsideTarget1)
 And high <= S10 + .5
 And PredictedS10 < GlobexLow
 And PredictedS10 - S10Range > DownsideTarget1 + 1
-//And AbsValue (PP - close) > 1                              {added this line on 1.23.15}
+And AbsValue (PP - close) > .25                                      
+And Highest (Close, 10) - Lowest (Close, 10) > 4                     
 
 Then begin
 Sellshort ("(S)S10>T1") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1240,72 +1218,64 @@ S10Entry.f= PredictedS10 - S10Range;
 End;
 
 {scale out}
-If S10Entry.f - DownsideTarget1 > 1 Then Buytocover ("-S10.T1.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at DownsideTarget1 + .5 limit;                 {*****help me out Matt then check 6.14.13 and optomize}
+If S10Entry.f - DownsideTarget1 > 1 Then Buytocover ("-S10.T1.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at DownsideTarget1 + .5 limit;               
 Buytocover ("-S10.T2.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at DownsideTarget2 + .5 limit;
-Buytocover ("-ERC.6pointer.d") From Entry ("(S)S10>T1") 1 contracts Next Bar at S10Entry.f - 6 limit;                    
+Buytocover ("-S10.7pointer.d") From Entry ("(S)S10>T1") 1 contracts Next Bar at S10Entry.f - 7 limit;                                 
 If S1 < DownsideTarget2 - 1.5 then Buytocover ("-S10.S1.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at S1 + 1 limit;
 If S2 < DownsideTarget2 - 1.5 then Buytocover ("-S10.S2.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at S2 + .75 limit;  
 If S3 < DownsideTarget2 - 1.5 then Buytocover ("-S10.S3.f") From Entry ("(S)S10>T1") 1 contracts Next Bar at S3 + .75 limit;
-//If PP < GlobexLow - 1 then Buytocover ("-S10.PP") From Entry ("(S)S10>T1") 1 contracts Next Bar at PP + .5 limit;                    {added this line on 1.23.15}
 
 {S10 PreHook}
 If Low > S10 
 and (Close > Open + .5 or time > 1430 or Close - Low > 1)
-then Buytocover ("-S10 pre-hook.f") from Entry ("(S)S10>T1") all contracts next bar at PredictedS10 limit;
+then Buytocover ("-S10 pre-hook.f") from Entry ("(S)S10>T1") all contracts next bar at PredictedS10 limit;          
 
 {get safe}
 If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
 And S10Entry.f - DownsideTarget1 > 2.25 
-then Buytocover ("-S10.SafeStop.e") From Entry ("(S)S10>T1") all contracts next bar at S10Entry.f + 1 stop;                      {2.12.15 CHGD FROM 2 TO 1.  LOOK AT 2.06.08, IT HITS TWO STOPS WITHOUT ANY TARGETS HIT}    
-If Currentcontracts < 4
-then Buytocover ("-S10.SafeStop.f") From Entry ("(S)S10>T1") all contracts next bar at GlobexLow + 7 stop;                       {changed this stop from 7 to 2 on 1.23.15}    {2.12.15 THIS LINE WAS COMMENTED OUT, TURNED IT ON, STILL OPTIMIZES AT 7 WHICH WAS OLD SETTING}     { ***************huge stops with these 3, funky data,  find a trade to optomize}
+then Buytocover ("-S10.SafeStop.e") From Entry ("(S)S10>T1") all contracts next bar at S10Entry.f + 1 stop;                     
+//If Currentcontracts < 4
+//then Buytocover ("-S10.SafeStop.f") From Entry ("(S)S10>T1") all contracts next bar at GlobexLow + 7 stop;                 
 If Currentcontracts < 3
-then Buytocover ("-S10.SafeStop.g") From Entry ("(S)S10>T1") all contracts next bar at DownsideTarget1 + 3 stop;                 {opened stop up from 1 to 1.5 on 1.23.15}     {2.12.15, TIGHTENED THIS FROM 2 TO 3}
+then Buytocover ("-S10.SafeStop.g") From Entry ("(S)S10>T1") all contracts next bar at DownsideTarget1 + 3 stop;             
 If Currentcontracts < 2
-then Buytocover ("-S10.SafeStop.h") From Entry ("(S)S10>T1") all contracts next bar at DownsideTarget2  + .5 stop;               {changed this stop to 1 on 1.23.15}        {2.12.15, TIGHTENED THIS to -2} 
+then Buytocover ("-S10.SafeStop.h") From Entry ("(S)S10>T1") all contracts next bar at DownsideTarget2 + .5 stop;               
 
 {stop out}
-Buytocover ("-S10.Stopout.f") From Entry ("(S)S10>T1") all contracts Next Bar at  Bounceline + 3 stop;                           {changed this stop from Bounceline to GlobexLow on 1.23.15}
+Buytocover ("-S10.Stopout.f") From Entry ("(S)S10>T1") all contracts Next Bar at Bounceline +.5 stop;     
 End;
 {0000000000000000000000=====END SHORT S10 ENTRIES above Downside Target 1========00000000000000000000}
 
 
 
-{*********** theres a full stop out on 1.09.15 at 13.10 where the market is dead flat}
-{7 year test:  Master          2014 3803  136 69%             2014-13 Test:   Master                 2014  }
-{000000000000000======SHORT S10 ENTRIES above Downside Target 2, (S10>T2)=======00000000000000}
+
+{000000000000000======SHORT S10 ENTRIES above Downside Target 2, (S10>T2) Master=======00000000000000}
 If S.S10.above.T2 = 1
 And Marketposition = 0 
 And Time >= 825 
-And Time < 1430
-And S10 < S10[1]                                                   {2.12.15 CHGD THIS FROM 0 TO -.4} 
+And Time < 1445                                                   
+And S10 < S10[1] -.1                                               
 And PP > S10
 And high <= S10 + .5
-//And S10_30 < S10_30[1]                             {2.12.15 ADDED THIS LINE}    
-And PredictedS10 < DownsideTarget1
 And PredictedS10 - S10Range > DownsideTarget2 + 1
-And (Close - DownsideTarget2) > 2      //see above duplicate
-And AbsValue (DownsideTarget2 - Close) > 1.5  {added this line on 1.23.15}                 
-And AbsValue (Close - DownsideTarget1) > .75   
-
-//And AbsValue (S2 - Close) > 1                                       {added this line on 1.23.15}
-
+And (Close - DownsideTarget2) > 2                    
+And PredictedS10 < DownsideTarget1          
+And AbsValue (Close - DownsideTarget1) > .75  
+And Highest (Close, 20) - Lowest (Close, 20) > 7                    
                           
-
 Then begin
 Sellshort ("(S)S10>T2") 4 contracts next bar at PredictedS10 - S10Range limit;
 S10Entry.g= PredictedS10 - S10Range;
 End;
 
 {scale out}
-Buytocover ("-S10.T2.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at DownsideTarget2 + .5 limit;
+Buytocover ("-S10.T2.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at DownsideTarget2 + .5 limit;                            
 If S1 < S10Entry.g - 1.5 then Buytocover ("-S10.S1.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at S1 + .75 limit;
-If S2 < S10Entry.g - 1.5 then Buytocover ("-S10.S2.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at S2 + 1.5 limit;   {****this exit not working on 12/10 at 14:10}
+If S2 < S10Entry.g - 1.5 then Buytocover ("-S10.S2.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at S2 + .75 limit;   
 If S3 < S10Entry.g - 1.5 then Buytocover ("-S10.S3.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at S3 + 1 limit;
-//f S2 < S10Entry.g  then Buytocover ("-S10.S2.g") From Entry ("(S)S10>T2") 1 contracts Next Bar at S2 + .75 limit;              {SEE ABOVE   removed numerial restrictions and change entry limit}
-Buytocover ("-ERC.10pointer.c") From Entry ("(S)S10>T2") 1 contracts Next Bar at S10Entry.g - 10 limit;                    {2.12.15 CHG FM 6 TO 5}   
+Buytocover ("-ERC.10pointer.c") From Entry ("(S)S10>T2") 1 contracts Next Bar at S10Entry.g - 10 limit;                          
 
 {S10 PreHook}
 If Low > S10 
@@ -1317,38 +1287,32 @@ If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
 And S10Entry.g - DownsideTarget2 > 2.25 
-then Buytocover ("-S10.SafeStop.i") From Entry ("(S)S10>T2") all contracts next bar at S10Entry.g + 1 stop;                     {changed from +1 to -2 on 1.23.15}
+then Buytocover ("-S10.SafeStop.i") From Entry ("(S)S10>T2") all contracts next bar at S10Entry.g + .75 stop;                        
 If Currentcontracts < 4
 then Buytocover ("-S10.SafeStop.j") From Entry ("(S)S10>T2") all contracts next bar at DownsideTarget1 + 3 stop;         
 If Currentcontracts < 3
-then Buytocover ("-S10.SafeStop.k") From Entry ("(S)S10>T2") all contracts next bar at DownsideTarget2 + 1 stop;                   {changed from +1 to -1 on 1.23.15}
+then Buytocover ("-S10.SafeStop.k") From Entry ("(S)S10>T2") all contracts next bar at DownsideTarget2 + 1 stop;                  
 If Currentcontracts < 2
 then Buytocover ("-S10.SafeStop.l") From Entry ("(S)S10>T2") all contracts next bar at DownsideTarget2 - 7 stop;   
 End;
  
 {stop out}
-Buytocover ("-S10.Stopout.g") From Entry ("(S)S10>T2") all contracts Next Bar at S10Entry.g + 4 stop;                               {2.12.15  CHGD FROM +3 TO -5}
+Buytocover ("-S10.Stopout.g") From Entry ("(S)S10>T2") all contracts Next Bar at S10Entry.g + 4 stop;                              
 {000000000000000000=======END SHORT S10 ENTRIES above Upside Target 2========000000000000000000}
 
 
-{7 year test:  Master          2014 23011  590 73%             2014-13 Test:   Master                 2014  }
-{0000000000000000======SHORT S10 ENTRIES below Upside Target 2, (S10<T2)=======000000000000000000}
+{0000000000000000======SHORT S10 ENTRIES below Upside Target 2, (S10<T2) Master=======000000000000000000}
 If S.S10.below.T2 = 1 
 And Marketposition = 0 
 And Time >= 825 
-And Time < 1400                         
-And Bounceline - GlobexLow > 2        
+And Time < 1445                                                                             
+And Bounceline - GlobexLow > 2                                              
 And S10 < S10[1] - .38
 And high <= S10 + .5
 And high[1] <= S10 [1]
 And S10TrendCount < -10 
 And  (PredictedS10 > S3 or S10 < S10[1]-.6)
 And PredictedS10 < DownsideTarget2 - .5
-//And Absvalue (S2 - Close) > 1                 {added this line on 1.23.15}  
-//And (Close - DownsideTarget2) > 2                                         {2.12.15 REMOVED}
-//And AbsValue (Close - DownsideTarget1) > .75                              {2.12.15 REMOVED}
-   
-
 
 Then begin
 Sellshort ("(S)S10<T2") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1356,11 +1320,11 @@ S10Entry.h= PredictedS10 - S10Range;
 End;
 
 {scale out}
-Buytocover ("-S10<T2.4pt") From Entry ("(S)S10<T2") 1 contracts Next Bar at S10Entry.h - 4 limit;                                        {changed to 3.5 fm 4 on 1.23.15} 
+Buytocover ("-S10<T2.4pt") From Entry ("(S)S10<T2") 1 contracts Next Bar at S10Entry.h - 4 limit;                                      
 Buytocover ("-S10<T2.6pt") From Entry ("(S)S10<T2") 1 contracts Next Bar at S10Entry.h - 6 limit;
 Buytocover ("-S10<T2.10pt") From Entry ("(S)S10<T2") 1 contracts Next Bar at S10Entry.h - 10 limit;
 If S1 < S10Entry.h - 1.5 then Buytocover ("-S10.S1.h") From Entry ("(S)S10<T2") 1 contracts Next Bar at S1 + .5 limit;
-If S2 < S10Entry.h - 1.5 then Buytocover ("-S10.S2.h") From Entry ("(S)S10<T2") 1 contracts Next Bar at S2 + .75 limit;                  {****this exit not working on 12/10 at 14:10}
+If S2 < S10Entry.h - 1.5 then Buytocover ("-S10.S2.h") From Entry ("(S)S10<T2") 1 contracts Next Bar at S2 + .75 limit;                 
 If S3 < S10Entry.h - 1.5 then Buytocover ("-S10.S3.h") From Entry ("(S)S10<T2") 1 contracts Next Bar at S3 + 1.50 limit;
 
 {S10 PreHook}
@@ -1372,17 +1336,17 @@ then Buytocover ("-S10 pre-hook.h") from Entry ("(S)S10<T2") all contracts next 
 If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
-then Buytocover ("-S10.SafeStop.m") From Entry ("(S)S10<T2") all contracts next bar at S10Entry.h  stop;                           {changed from 0 to -2 on 1.23.15}  
+then Buytocover ("-S10.SafeStop.m") From Entry ("(S)S10<T2") all contracts next bar at S10Entry.h   stop;                                 
 If Currentcontracts < 4                                                                                                   
 then Buytocover ("-S10.SafeStop.n") From Entry ("(S)S10<T2") all contracts next bar at DownsideTarget2 - 2.75 stop;
 If Currentcontracts < 3
 then Buytocover ("-S10.SafeStop.p") From Entry ("(S)S10<T2") all contracts next bar at DownsideTarget2 - 3.5 stop;
 If Currentcontracts < 2
-then Buytocover ("-S10.SafeStop.q") From Entry ("(S)S10<T2") all contracts next bar at DownsideTarget2 - 3 stop;                   {2.12.15  CHGD THIS STOP TO 7}
+then Buytocover ("-S10.SafeStop.q") From Entry ("(S)S10<T2") all contracts next bar at DownsideTarget2 - 3 stop;                         
 End;
  
 {stop out}
-Buytocover ("-S10.Stopout.h") From Entry ("(S)S10<T2") all contracts Next Bar at S10Entry.h + 6 stop;                                   {changed from 6 to 4 on 1.23.15} 
+Buytocover ("-S10.Stopout.h") From Entry ("(S)S10<T2") all contracts Next Bar at S10Entry.h + 6 stop;                                     
 {00000000000000========END OF SHORT S10 ENTRY below Downside Target 2======000000000000000}
 
 
@@ -1396,12 +1360,14 @@ And Time < 1445
 And High - Close > 3.25                       
 And Close < S10 + .75                          
 And Close >= GlobexHigh
-And S10_30 < S10_30[1] + .5                    {****************THIS LINE NOT WORKING, SEE 11/24/08 AND MANY OTHERS  Master opt   2012 this line added 1.22.14}   {2008 2.12.15 ADDED THIS LINE +.2}   
+And S10_30 < S10_30[1] + .5                      
 And LTopen < S10_30 + 6                                                    
 And MyMACD < 0                               
 And AbsValue (Close - UpsideTarget1) > 1.25   
 And AbsValue (Close - GlobexHigh) > 1.25       
-And AbsValue (Close - PP) > 3.5                
+And AbsValue (Close - PP) > 3.5 
+And Highest (Close, 10) - Lowest (Close, 10) > 3                    
+              
 
 Then begin
 Sellshort ("(S)ERC>GBH") 4 contracts next bar at Close + .75 limit;                     
@@ -1451,8 +1417,8 @@ And Close >= Bounceline
 And AbsValue (Bounceline - Close) > 1         
 And S10_30 < S10_30[1] +.1                          
 And MyMACD < -.1                              
-And AbsValue (Close - PP) > 2.5                
-
+And AbsValue (Close - PP) > 2.5                    
+              
 Then begin
 Sellshort ("(S)ERC<GBH") 4 contracts next bar at Close + .75 limit;
 ERCEntry.f = Close + .75;                 
@@ -1460,7 +1426,7 @@ End;
 
 {scale out}
 Buytocover ("-ERC.GH.f") From Entry ("(S)ERC<GBH") 1 contracts Next Bar at GlobexLow + .5 limit;
-Buytocover ("-ERC.T1.f") From Entry ("(S)ERC<GBH") 1 contracts Next Bar at DownsideTarget1 + .5 limit;            {2012  BUG************matt look at 4.10.12 and 12.26.12 got a problem i can't figure out, those going on for all f exit trades }   
+Buytocover ("-ERC.T1.f") From Entry ("(S)ERC<GBH") 1 contracts Next Bar at DownsideTarget1 + .5 limit;              
 Buytocover ("-ERC.T2.f") From Entry ("(S)ERC<GBH") 1 contracts Next Bar at DownsideTarget2 + .5 limit;
 If S1 < Bounceline - 1.5 then Buytocover ("-ERC.BL.f") From Entry ("(S)ERC<GBH") 1 contracts Next Bar at S1 + .5 limit;                          
 If S2 < DownsideTarget1 - 1.5 then Buytocover ("-ERC.S2.f") From Entry ("(S)ERC<GBH") all contracts Next Bar at S2 + .5 limit;                     
@@ -1494,11 +1460,11 @@ Buytocover ("-ERC.Stop.f") From Entry ("(S)ERC<GBH") all contracts Next Bar at E
 
 
 
-{==== SHORT ERC ENTRIES below Downside Target 2 ===}
+{============================== SHORT ERC ENTRIES below Downside Target 2 Master=================================}
 If S.ERC.below.T2 = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1430
+And Time < 1445                                                    
 And High - Close >= 2.5
 And Close - Low < 2
 And Bounceline - GlobexLow > 4.5
@@ -1508,6 +1474,7 @@ And LTopen < S10_30 + 1
 And S10_30 < S10_30[1] + 1           
 And S10 < S10[1] +.1  
 And DownsideTarget2 - Close > .5
+And Highest (Close, 10) - Lowest (Close, 10) > 5                    
 
 Then begin
 Sellshort ("(S)ERC<T2") 4 contracts next bar at Close + .75 limit;
@@ -1528,8 +1495,7 @@ If Currentcontracts < 4
 And ERCEntry.z - Low  > 7 
 then Buytocover ("-ERC.below.T2.SS.a") From Entry ("(S)ERC<T2") all contracts next bar at ERCEntry.z stop;
 End;   
-
-{=== END SHORT ERC ENTRIES below Downside Target 2===}
+{==================== END SHORT ERC ENTRIES below Downside Target 2==========================}
 
 
 
