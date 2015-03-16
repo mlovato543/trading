@@ -270,7 +270,7 @@ end;
 
 
 
-{----------BEGIN CALCULATE STATISTICS----------}
+{----------BEGIN CALCULATE GLOBEX RANGE STATISTICS----------}
 Array:  GB_Range[] (0);
 Array_SetMaxIndex(GB_Range, 31) ;
 
@@ -304,14 +304,15 @@ Begin
 	
 End;
 
-{---------- END  CALCULATE STATISTICS----------}
+{---------- END  CALCULATE GLOBEX RANGE STATISTICS----------}
 
 
 
 
 
 
-{----------BEGIN PLOT STATISTICS----------}
+
+{----------BEGIN PLOT GLOBEX RANGE STATISTICS----------}
 
 Inputs:
 Display_Stats (1);
@@ -365,17 +366,90 @@ If Time = 825
 And Display_Stats = 1
 then
 Begin
-Value79 = Text_SetColor(Text_new(D,T,R2 + 7,"Today's Globex Range: " + numtostr(GB_Range[Count],2) ),yellow);
-If Count > 4 then Value85 = Text_SetColor(Text_new(D,T,R2 + 6,"5-day avg GB Range: " + GB_Range_AVG_5 ),yellow);
-If Count > 9 then Value84 = Text_SetColor(Text_new(D,T,R2 + 5,"10-day avg GB Range: " + GB_Range_AVG_10 ),yellow);
-If Count > 14 then Value83 = Text_SetColor(Text_new(D,T,R2 + 4,"15-day avg GB Range: " + GB_Range_AVG_15 ),yellow);
-If Count > 19 then Value82 = Text_SetColor(Text_new(D,T,R2 + 3,"20-day avg GB Range: " + GB_Range_AVG_20 ),yellow);
-If Count > 24 then Value81 = Text_SetColor(Text_new(D,T,R2 + 2,"25-day avg GB Range: " + GB_Range_AVG_25 ),yellow);
-If Count = 30 then Value80 = Text_SetColor(Text_new(D,T,R2 + 1,"30-day avg GB Range: " + GB_Range_AVG_30 ),yellow);
+//Value79 = Text_SetColor(Text_new(D,T,R2 + 7,"Today's Globex Range: " + numtostr(GB_Range[Count],2) ),yellow);
+//If Count > 4 then Value85 = Text_SetColor(Text_new(D,T,R2 + 6,"5-day avg GB Range: " + GB_Range_AVG_5 ),yellow);
+//If Count > 9 then Value84 = Text_SetColor(Text_new(D,T,R2 + 5,"10-day avg GB Range: " + GB_Range_AVG_10 ),yellow);
+//If Count > 14 then Value83 = Text_SetColor(Text_new(D,T,R2 + 4,"15-day avg GB Range: " + GB_Range_AVG_15 ),yellow);
+//If Count > 19 then Value82 = Text_SetColor(Text_new(D,T,R2 + 3,"20-day avg GB Range: " + GB_Range_AVG_20 ),yellow);
+//If Count > 24 then Value81 = Text_SetColor(Text_new(D,T,R2 + 2,"25-day avg GB Range: " + GB_Range_AVG_25 ),yellow);
+//If Count = 30 then Value80 = Text_SetColor(Text_new(D,T,R2 +5,"30-day avg GB Range: " + GB_Range_AVG_30 ),yellow);
 
 End;
 
-{---------- END  PLOT STATISTICS----------}
+{---------- END PLOT GLOBEX RANGE STATISTICS----------}
+
+
+
+
+
+
+
+
+
+{----------BEGIN CALCULATE 50 DAY MA ARRAY----------}
+Array:  Fifty_Day_MA[] (0);
+Array_SetMaxIndex(Fifty_Day_MA, 51) ;
+
+variables:
+Count_50dma (0),
+Count_loop_50dma (0)
+;
+
+//Populate Array for first 50 days
+If Time = SessionEndTime (0,1)
+And Count_50dma < 50
+then
+Begin
+    Count_50dma = Count_50dma +1;
+	Fifty_Day_MA[Count_50dma] = Open;
+End;
+
+//Update Array each day after first 50 days
+If Time = SessionEndTime (0,1)
+And Count_50dma[1] = 50 
+then
+Begin
+	Count_loop_50dma = 0;
+	While Count_loop_50dma < 50 
+	begin
+		Count_loop_50dma = Count_loop_50dma +1;
+		Fifty_Day_MA[Count_loop_50dma] = Fifty_Day_MA[Count_loop_50dma + 1];
+	End;
+	Fifty_Day_MA[50] = Open;	
+End;
+
+{---------- END  CALCULATE 50 DAY MA ARRAY----------}
+
+
+
+
+{----------BEGIN PLOT 50 DAY MOVING AVERAGE STATISTICS----------}
+
+Variables:
+Fifty_Day_MA_SUM (0),
+Fifty_Day_MA_AVG ("")
+;
+
+If Count_50dma = 50 then begin
+Fifty_Day_MA_SUM = Array_Sum(Fifty_Day_MA, Count_50dma - 49, Count_50dma);
+Fifty_Day_MA_AVG = numtostr(Fifty_Day_MA_SUM/50,2);
+end;
+
+If Time = SessionEndTime (0,1)
+And Display_Stats = 1
+then
+Begin
+	If Count_50dma = 50 then begin
+		//Value42 = Text_SetColor(Text_new(D,T,R2 + 1,"Today's Close: " + numtoStr(Fifty_Day_MA[Count_50dma],2) ),yellow);
+		Value43 = Text_SetColor(Text_new(D,T,R2 + 2,"Today's Fifty Day Moving Average: " + Fifty_Day_MA_AVG ),yellow);
+	End;
+
+End;
+
+{---------- END PLOT PLOT 50 DAY MOVING AVERAGE STATISTICS----------}
+
+
+
 
 
 {-------------------------END PLOT-------------------------------}
