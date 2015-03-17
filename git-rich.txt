@@ -1,4 +1,4 @@
-{aaTerminator MASTER CODE rev  3/15/15 @ 637  $545,192  1.1.07 to 3.15.15}
+{aaTerminator MASTER CODE rev  3/17/15 @ 637  $561,595  1.1.07 to 3.16.15}
 
 {Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
 New Year’s Day                    January 1                         closed
@@ -494,7 +494,8 @@ And AbsValue((Highest (high,10)- GlobexHigh))>2
 And S10 > S10[1]+ .5                                                
 And LTOpen > S10_30                                                             
 And MyMACD > .1
-And MyMACD_30 > 0                  
+And MyMACD_30 > 0  
+And MyMACD > MyMACD [7] -.35              
 And PredictedS10 + S10Range < UpsideTarget1 - 1
 And PredictedS10 + S10Range >= GlobexHigh -1 
 And AbsValue(PP - Bounceline) > .5
@@ -555,7 +556,7 @@ And SessionHigh < UpsideTarget2 - 1
 And PredictedS10 + S10Range < UpsideTarget2 - 2
 And PredictedS10 + S10Range >= Upsidetarget1 -.25 
 And MyMACD > .1                                                   
-And Highest (Close, 20) - Lowest (Close, 20) > 4                  
+And Highest (Close, 20) - Lowest (Close, 20) > 4                 
 
 Then begin
 Buy ("(L)S10<T2") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -592,7 +593,7 @@ Sell ("+S10<T2.Stopout") From Entry ("(L)S10<T2") all contracts Next Bar at S10E
 
 
 
-{===============LONG S10 ENTRIES above Upside Target 2, (S10>T2) Master===============}
+{===============LONG S10 ENTRIES above Upside Target 2, (S10>T2)===============}
 If L.S10.above.T2 = 1
 And Marketposition = 0
 And Time >= 825 
@@ -603,7 +604,7 @@ And Open - Close < 2.25
 And SessionHigh > UpsideTarget2 + 5                      
 And PredictedS10 + S10Range >= Upsidetarget2 -.25               
 And LTopen > S10_30 + 1                                   
-And Highest (Close, 20) - Lowest (Close, 20) > 5         
+And Highest (Close, 20) - Lowest (Close, 20) > 5 	        
  
 Then begin
 Buy ("(L)S10>T2") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -613,6 +614,9 @@ End;
 {scale out}
 Sell ("+S10>T2.a") From Entry ("(L)S10>T2") 2 contracts Next Bar at S10Entry.d + 3 limit;
 Sell ("+S10.12pointer.d") From Entry ("(L)S10>T2") 1 contracts Next Bar at S10Entry.d + 12 limit;                 
+If R1 > S10Entry.d + 2 Then Sell ("S10>T2.R1") From Entry ("(L)S10>T2") 1 contracts Next Bar at R1 - .5 limit;
+If R2 > S10Entry.d + 2 Then Sell ("S10>T2.R2") From Entry ("(L)S10>T2") 1 contracts Next Bar at R2 - .5 limit;
+If R3 > S10Entry.d + 2 Then Sell ("S10>T2.R3") From Entry ("(L)S10>T2") 1 contracts Next Bar at R3 - .75 limit;
 
 {S10 PreHook}
 If High < S10 
@@ -697,7 +701,8 @@ And Highest (high, 20) < UpsideTarget1 - 1
 And Lowest (low, 15) > Bounceline - .75
 And GlobexHigh - Bounceline > 2.5             
 And MyMACD > - .5                              
-And LTopen > S10_30 - 1					      	
+And LTopen > S10_30 - 1		
+And MyMACD > MyMACD [7] -.4				      	
 And Highest (Close, 27) - Lowest (Close, 7) > 2        				        							
  
 Then begin
@@ -1260,7 +1265,8 @@ And PredictedS10 - S10Range > DownsideTarget2 + 1
 And (Close - DownsideTarget2) > 2                    
 And PredictedS10 < DownsideTarget1          
 And AbsValue (Close - DownsideTarget1) > .75  
-And Highest (Close, 20) - Lowest (Close, 20) > 7                    
+And Highest (Close, 20) - Lowest (Close, 20) > 7 
+ And MyMACD < MyMACD [2] + .7                  
                           
 Then begin
 Sellshort ("(S)S10>T2") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1310,6 +1316,7 @@ And high[1] <= S10 [1]
 And S10TrendCount < -10 
 And  (PredictedS10 > S3 or S10 < S10[1]-.6)
 And PredictedS10 < DownsideTarget2 - .5
+And MyMACD < MyMACD [40] + .1
 
 Then begin
 Sellshort ("(S)S10<T2") 4 contracts next bar at PredictedS10 - S10Range limit;
