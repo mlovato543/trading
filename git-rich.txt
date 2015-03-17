@@ -1,4 +1,4 @@
-{aaTerminator MASTER CODE rev  3/17/15 @ 637  $561,595  1.1.07 to 3.16.15}
+{aaTerminator MASTER CODE rev  3/17/15 @ 5.42  $596,000  1.1.07 to 3.16.15}
 
 {Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
 New Year’s Day                    January 1                         closed
@@ -1248,8 +1248,9 @@ And Lowest (oSlowD,5) > 10
 And Close < Bounceline                                            
 And PredictedS10 < GlobexHigh
 And PredictedS10 - S10Range > GlobexLow + 1
+And Highest (Close, 20) - Lowest (Close, 20) > 6 
+And Lowest(MyMACD, 1) - Lowest(MyMACD, 4) < + .8   {optomized 3.17}
  
-
 Then begin
 Sellshort ("(S)S10>GBL") 4 contracts next bar at PredictedS10 - S10Range limit;
 S10Entry.e= PredictedS10 - S10Range;
@@ -1297,7 +1298,8 @@ And high <= S10 + 1
 And PredictedS10 < GlobexLow
 And PredictedS10 - S10Range > DownsideTarget1 + 1
 And AbsValue (PP - close) > .25                                      
-And Highest (Close, 10) - Lowest (Close, 10) > 4                     
+And Highest (Close, 10) - Lowest (Close, 10) > 4 
+And MyMACD < MyMACD [2] + .7                     
 
 Then begin
 Sellshort ("(S)S10>T1") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1351,7 +1353,7 @@ And (Close - DownsideTarget2) > 2
 And PredictedS10 < DownsideTarget1          
 And AbsValue (Close - DownsideTarget1) > .75  
 And Highest (Close, 20) - Lowest (Close, 20) > 7 
- And MyMACD < MyMACD [2] + .7                  
+And MyMACD < MyMACD [2] + .7                  
                           
 Then begin
 Sellshort ("(S)S10>T2") 4 contracts next bar at PredictedS10 - S10Range limit;
