@@ -404,9 +404,88 @@ Then S10TrendCount = S10TrendCount - 1;
 
 
 
+{----------BEGIN CALCULATE 50 DAY MA ARRAY----------}
+Array:  Fifty_Day_MA[] (0);
+Array_SetMaxIndex(Fifty_Day_MA, 51) ;
+
+variables:
+Count_50dma (0),
+Count_loop_50dma (0)
+;
+
+//Populate Array for first 50 days
+If Time = SessionEndTime (0,1)
+And Count_50dma < 50
+then
+Begin
+    Count_50dma = Count_50dma +1;
+	Fifty_Day_MA[Count_50dma] = Open;
+End;
+
+//Update Array each day after first 50 days
+If Time = SessionEndTime (0,1)
+And Count_50dma[1] = 50 
+then Begin
+	Count_loop_50dma = 0;
+	While Count_loop_50dma < 50 
+	begin
+		Count_loop_50dma = Count_loop_50dma +1;
+		Fifty_Day_MA[Count_loop_50dma] = Fifty_Day_MA[Count_loop_50dma + 1];
+	End;
+	Fifty_Day_MA[50] = Open;	
+End;
+
+
+Variables:
+Fifty_Day_MA_SUM (0),
+Fifty_Day_MA_AVG (0),
+Fifty_Day_MA_angle (0),
+Fifty_Day_MA_ready (0)
+;
+
+If Count_50dma = 50 then begin
+Fifty_Day_MA_ready = 1;
+Fifty_Day_MA_SUM = Array_Sum(Fifty_Day_MA, Count_50dma - 49, Count_50dma);
+Fifty_Day_MA_AVG = Fifty_Day_MA_SUM/50;
+Fifty_Day_MA_angle = Fifty_Day_MA_AVG - Fifty_Day_MA_AVG[1];
+end;
+
+
+{---------- END  CALCULATE 50 DAY MA ARRAY----------}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {*************************** WARNING -  FOR THIS TRADE YESTERDAY'S CLOSE MUST BE ABOVE THE 50MA ON THE DAILY CHART TO TRADE TODAY}
 
 {===============LONG S10 ENTRIES below Globex High, (S10<GBH) Master===============}
+
+{optimized for infinity range}
+Inputs:
+LS10underGBH_H (21),
+LS10underGBH_L (9),
+LS10underGBH_R (2.75)
+;
+
+{optimized for 50 Day MA}
+Inputs:
+FDMA_range (0)
+;
+
 If L.S10.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
@@ -423,12 +502,17 @@ And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
 And LTopen > S10_30 - 4                                   
 And AbsValue (PP - Close) > .5                             
-And Highest (Close, 17) - Lowest (Close, 9) > 2.75      
+And Highest (Close, LS10underGBH_H) - Lowest (Close, LS10underGBH_L) > LS10underGBH_R      
+And 
+	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG + FDMA_range)
+	Or
+	Fifty_Day_MA_ready = 0)
+
  
- Then begin
- Buy ("(L)S10<GBH") 4 contracts next bar at PredictedS10 + S10Range limit;
- S10Entry.a= PredictedS10 + S10Range;
- End;
+Then begin
+Buy ("(L)S10<GBH") 4 contracts next bar at PredictedS10 + S10Range limit;
+S10Entry.a= PredictedS10 + S10Range;
+End;
 
 {scale out}
 Sell ("+S10.GH.a") From Entry ("(L)S10<GBH") 1 contracts Next Bar at GlobexHigh - .5 limit;
@@ -498,7 +582,8 @@ And MyMACD_30 > 0
 And PredictedS10 + S10Range < UpsideTarget1 - 1
 And PredictedS10 + S10Range >= GlobexHigh -1 
 And AbsValue(PP - Bounceline) > .5
-And Highest (Close, 10) - Lowest (Close, 10) > 4                  
+And Highest (Close, 10) - Lowest (Close, 10) > 4
+                
  
 Then begin
 Buy ("(L)S10<T1") 4 contracts next bar at PredictedS10 + S10Range limit;
