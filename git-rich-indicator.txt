@@ -446,7 +446,7 @@ Begin
 
 End;
 
-{---------- END PLOT PLOT 50 DAY MOVING AVERAGE STATISTICS----------}
+{---------- END PLOT PLOT 50 DAY MOVING AVERAGE STATISTICS----------} 
 
 
 
