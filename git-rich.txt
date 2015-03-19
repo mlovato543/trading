@@ -1,4 +1,4 @@
-{aaTerminator MASTER CODE rev  3/18/15 @ 10.30  $631,157  1.1.07 to 3.18.15}
+{aaTerminator MASTER CODE rev  3/17/15 @ 5.42  $596,000  1.1.07 to 3.16.15}
 
 {Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
 New Year’s Day                    January 1                         closed
@@ -520,6 +520,7 @@ end;
 
 
 
+{*************************** WARNING -  FOR THIS TRADE YESTERDAY'S CLOSE MUST BE ABOVE THE 50MA ON THE DAILY CHART TO TRADE TODAY}
 
 {===============LONG S10 ENTRIES below Globex High, (S10<GBH) Master===============}
 
@@ -549,10 +550,8 @@ And AbsValue((Highest (high,10)- GlobexHigh)) > 0.5
 And AbsValue((Highest (high,10)- PP)) > 0
 And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
-And LTopen > S10_30 - 4  
-//And Highest(MyMACD,4) < 1.1            {new code 3.20 no help}                                 
-And AbsValue (PP - Close) > .5 
-{And Highest(MyMACD, 4) - Highest(MyMACD, 1) > - .6    couldn't hand optimize this, run thru the optimizer }                            
+And LTopen > S10_30 - 4                                   
+And AbsValue (PP - Close) > .5                             
 And Highest (Close, LS10underGBH_H) - Lowest (Close, LS10underGBH_L) > LS10underGBH_R      
 And 
 	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG + FDMA_range)
@@ -638,13 +637,11 @@ And AbsValue((Highest (high,10)- GlobexHigh))>2
 And S10 > S10[1]+ .5                                                
 And LTOpen > S10_30                                                             
 And MyMACD > .1
-And Highest(MyMACD,4) < .6            {new code 3.20 }  
 And MyMACD_30 > 0  
 And MyMACD > MyMACD [7] -.35              
 And PredictedS10 + S10Range < UpsideTarget1 - 1
 And PredictedS10 + S10Range >= GlobexHigh -1 
 And AbsValue(PP - Bounceline) > .5
-//And Highest(MyMACD, 3) - Highest(MyMACD, 1) > - .1  {couldn't hand optimize this to any advantage, run thru the optimizer }  
 And Highest (Close, 10) - Lowest (Close, 10) > 4
                 
  
@@ -702,9 +699,7 @@ And AbsValue(PP - Bounceline) > .5
 And SessionHigh < UpsideTarget2 - 1
 And PredictedS10 + S10Range < UpsideTarget2 - 2
 And PredictedS10 + S10Range >= Upsidetarget1 -.25 
-And MyMACD > .1  
-And Highest(MyMACD,4) < 1            {new code 3.20 } 
-//And Highest(MyMACD, 3) - Highest(MyMACD, 1) > - .1  {couldn't hand optimize this to any advantage, run thru the optimizer }                                                
+And MyMACD > .1                                                   
 And Highest (Close, 20) - Lowest (Close, 20) > 4                 
 
 Then begin
@@ -1118,7 +1113,7 @@ And Highest (high,3) > GlobexHigh + .25
 And MyMACD_30 < + 1                                            
 And LTopen < S10_30 + 8  
 And Highest (Close, 5) - Lowest (Close, 5) > 1 
-          //And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}               						                
+                  						                
 
 Then begin
 Sellshort ("(S)Scalp") 4 contracts next bar at GlobexHigh - .75 limit;
@@ -1164,7 +1159,7 @@ And (Bounceline - GlobexLow > 2.5)
 And MyMACD_30 < - .7                                          
 And S10_30 < S10_30[1]
 And Highest (Close, 10) - Lowest (Close, 10) > 6  
-//And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}                 	                                        
+                	                                        
   
 Then begin
 Sellshort ("(S)BL") 4 contracts next bar at Bounceline -.75 limit;  
@@ -1210,12 +1205,11 @@ And Lowest(low,5) < Bounceline - 2
 And AbsValue(PP - GlobexLow) > 3                        
 And LTopen < S10_30 +.1                                   
 And S10 < S10[1]                                          
-And MyMACD < -.3                {this is way too sensitive to be right, might look at this}                                                                        
+And MyMACD < -.3                                                                           
 And (Bounceline - S1) > 3                                      
 And MyMACD_30 < 0                                      
-And S10_30 < S10_30[1] +.1 
-//And Highest (Close, 10) - Lowest (Close, 10) > 6  {needs to be optomized work this hard, can't be a flat market}  
-//And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}                       
+And S10_30 < S10_30[1] +.1  
+                      
        
 Then begin
 Sellshort ("(S)Z-BL") 4 contracts next bar at Bounceline - .75 limit;
@@ -1266,8 +1260,8 @@ And Lowest(low,5) > DownsideTarget1 +.25
 And LTopen < S10_30                                    
 And S10_30 < S10_30[1]                                                              
 And MyMACD_30 < +.2  
-And Highest (Close, 5) - Lowest (Close, 5) > 2   {needs to be optomized} 
-//And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}                  	                                   
+And Highest (Close, 5) - Lowest (Close, 5) > 2
+                 	                                   
 
 Then begin
 Sellshort ("(S)Z-GBL") 4 contracts next bar at GlobexLow - .75 limit;
@@ -1377,7 +1371,7 @@ And PredictedS10 < GlobexLow
 And PredictedS10 - S10Range > DownsideTarget1 + 1
 And AbsValue (PP - close) > .25                                      
 And Highest (Close, 10) - Lowest (Close, 10) > 4 
-And MyMACD < MyMACD [2] + .7  {replace with this and optomize  And Lowest(MyMACD, 1) - Lowest(MyMACD, 4) < + .8 }                   
+And MyMACD < MyMACD [2] + .7                     
 And 
 	((Ten_Day_MA_ready = 1 and Close < Ten_Day_MA_AVG)
 	Or
@@ -1438,7 +1432,7 @@ And (Close - DownsideTarget2) > 2
 And PredictedS10 < DownsideTarget1          
 And AbsValue (Close - DownsideTarget1) > .75  
 And Highest (Close, 20) - Lowest (Close, 20) > 7 
-And MyMACD < MyMACD [2] + .7     {replace with this and optomize  And Lowest(MyMACD, 1) - Lowest(MyMACD, 4) < + .8 }   
+And MyMACD < MyMACD [2] + .7
 
 Then begin
 Sellshort ("(S)S10>T2") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1488,8 +1482,7 @@ And high[1] <= S10 [1]
 And S10TrendCount < -10 
 And  (PredictedS10 > S3 or S10 < S10[1]-.6)
 And PredictedS10 < DownsideTarget2 - .5
-//And Highest (Close, 5) - Lowest (Close, 5) > 1  this needs to be optomized
-And MyMACD < MyMACD [40] + .1     {replace with this and optomize  And Lowest(MyMACD, 1) - Lowest(MyMACD, 4) < + .8 }  
+And MyMACD < MyMACD [40] + .1
 
 Then begin
 Sellshort ("(S)S10<T2") 4 contracts next bar at PredictedS10 - S10Range limit;
@@ -1543,13 +1536,8 @@ And MyMACD < 0
 And AbsValue (Close - UpsideTarget1) > 1.25   
 And AbsValue (Close - GlobexHigh) > 1.25       
 And AbsValue (Close - PP) > 3.5 
-And Highest (Close, 10) - Lowest (Close, 10) > 3 
-//And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}                 
-{And 
-	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG + FDMA_range)
-	Or
-	Fifty_Day_MA_ready = 0)  dropped profits by 3k but chart shows this should work}
-                                
+And Highest (Close, 10) - Lowest (Close, 10) > 3                    
+              
 
 Then begin
 Sellshort ("(S)ERC>GBH") 4 contracts next bar at Close + .75 limit;                     
@@ -1587,11 +1575,6 @@ End;
 
  
 {00000000000000========SHORT ERC ENTRY between GlobexHigh and Bounceline, ERC<GBH  Master======000000000000000}
-inputs:
-SMyERCGB_1(2),
-SMyERCGB_2(13),
-MyERCGB_Range (.1);
-
 If S.ERC.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
@@ -1600,15 +1583,12 @@ And High - Close > 3
 And Close < S10
 And LTopen < S10_30 + 9                         
 And Close < GlobexHigh                          
-And Close >= Bounceline        
+And Close >= Bounceline
+And AbsValue (Bounceline - Close) > 1         
 And S10_30 < S10_30[1] +.1                          
 And MyMACD < -.1 
-And MyMACD_30 < +1  
-And AbsValue (Bounceline - Close) > 1                             
-And AbsValue (Close - PP) > 2.5
-And AbsValue (Close - S1) > 2
-//And Highest (Close, 10) - Lowest (Close, 10) > 3   {needs to be optomized} 
-//And Lowest(MyMACD,SMyERCGB_1) - Lowest(MyMACD,SMyERCGB_2) < + MyERCGB_Range     {optomized 3.18, made no difference}                    
+And MyMACD_30 < +1                             
+And AbsValue (Close - PP) > 2.5                    
               
 Then begin
 Sellshort ("(S)ERC<GBH") 4 contracts next bar at Close + .75 limit;
@@ -1634,12 +1614,12 @@ If Currentcontracts <> 0
 Then Begin
 If Currentcontracts < 4
 And ERCEntry.f - GlobexLow > 2.25 
-then Buytocover ("-ERC.SafeStop.t") From Entry ("(S)ERC<GBH") all contracts next bar at ERCEntry.f + .25 stop;               
+then Buytocover ("-ERC.SafeStop.t") From Entry ("(S)ERC<GBH") all contracts next bar at ERCEntry.f - .25 stop;               
 If Currentcontracts < 4
 And Entryprice - GlobexLow <= 2.25 
 then Buytocover ("-ERC.SafeStop.u") From Entry ("(S)ERC<GBH") all contracts next bar at ERCEntry.f - (ERCEntry.f - Bounceline +.5) + .25 stop;
 If Currentcontracts < 3
-then Buytocover ("-ERC.SafeStop.v") From Entry ("(S)ERC<GBH") all contracts next bar at GlobexLow - 2.5 stop;                 
+then Buytocover ("-ERC.SafeStop.v") From Entry ("(S)ERC<GBH") all contracts next bar at GlobexLow - 2 stop;                 
 If Currentcontracts < 2 
 then Buytocover ("-ERC.SafeStop.w") From Entry ("(S)ERC<GBH") all contracts next bar at DownsideTarget2 + 2 stop;            
 End;
@@ -1665,7 +1645,7 @@ And S10_30 < S10_30[1] +.1
 And MyMACD < -.1  
 And MyMACD_30 < + 1                                                      
 And AbsValue (Close - PP) > 2.5 
-//And Highest (Close, 5) - Lowest (Close, 5) > 3                     
+//And Highest (Close, 5) - Lowest (Close, 5) > 3                    
               
 Then begin
 Sellshort ("(S)ERC<BL") 4 contracts next bar at Close + .75 limit;
@@ -1724,8 +1704,7 @@ And LTopen < S10_30 + 1
 And S10_30 < S10_30[1] + 1           
 And S10 < S10[1] +.1  
 And DownsideTarget2 - Close > .5
-And Highest (Close, 10) - Lowest (Close, 10) > 5 
-And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3     {needs to be optomized}                      
+And Highest (Close, 10) - Lowest (Close, 10) > 5                    
 
 Then begin
 Sellshort ("(S)ERC<T2") 4 contracts next bar at Close + .25 limit;
