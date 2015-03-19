@@ -1,5 +1,4 @@
 {aaTerminator MASTER CODE rev  3/17/15 @ 5.42  $596,000  1.1.07 to 3.16.15}
-{Matt's Version: rev 3/19/15 @ 9:05 $643,028 1.1.07 to 3.18.15}
 
 {Holidays     TEST STARTING AT 7:30 ON HOLIDAYS
 New Year’s Day                    January 1                         closed
@@ -39,7 +38,6 @@ S.S10.above.T2 (1),
 S.S10.below.T2 (1),
 S.ERC.above.GBH (1),
 S.ERC.below.GBH (1),
-S.ERC.below.BL (1),
 S.ERC.below.T2 (1)
 ;
 
@@ -336,7 +334,6 @@ ERCEntry.f (0),
 ERCEntry.g (0),
 ERCEntry.h (0),
 ERCEntry.i (0),
-ERCEntry.x (0),
 ERCEntry.z (0)
 ;
 
@@ -359,7 +356,6 @@ ERCentry.f = 0;
 ERCentry.g = 0;
 ERCentry.h = 0;
 ERCentry.i = 0;
-ERCentry.x = 0;
 ERCentry.z = 0;
 End;
 
@@ -527,6 +523,19 @@ end;
 {*************************** WARNING -  FOR THIS TRADE YESTERDAY'S CLOSE MUST BE ABOVE THE 50MA ON THE DAILY CHART TO TRADE TODAY}
 
 {===============LONG S10 ENTRIES below Globex High, (S10<GBH) Master===============}
+
+{optimized for infinity range}
+Inputs:
+LS10underGBH_H (21),
+LS10underGBH_L (9),
+LS10underGBH_R (2.75)
+;
+
+{optimized for 50 Day MA}
+Inputs:
+FDMA_range (-44)
+;
+
 If L.S10.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
@@ -543,11 +552,12 @@ And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
 And LTopen > S10_30 - 4                                   
 And AbsValue (PP - Close) > .5                             
-And Highest (Close, 21) - Lowest (Close, 9) > 2.75      
+And Highest (Close, LS10underGBH_H) - Lowest (Close, LS10underGBH_L) > LS10underGBH_R      
 And 
-	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG - 44)
+	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG + FDMA_range)
 	Or
 	Fifty_Day_MA_ready = 0)
+
  
 Then begin
 Buy ("(L)S10<GBH") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -613,13 +623,6 @@ End;
 
 
 {===============LONG S10 ENTRIES below Upside Target 1, (S10<T1)===============}
-{optimized for infinity range}
-Inputs:
-LS10underT1_H (17),
-LS10underT1_L (7),
-LS10underT1_R (9)
-;
-
 If L.S10.below.T1 = 1
 And Marketposition = 0
 And Time >= 825 
@@ -639,7 +642,7 @@ And MyMACD > MyMACD [7] -.35
 And PredictedS10 + S10Range < UpsideTarget1 - 1
 And PredictedS10 + S10Range >= GlobexHigh -1 
 And AbsValue(PP - Bounceline) > .5
-And Highest (Close, LS10underT1_H) - Lowest (Close, LS10underT1_L) > LS10underT1_R
+And Highest (Close, 10) - Lowest (Close, 10) > 4
                 
  
 Then begin
@@ -815,17 +818,12 @@ If AbsValue(PP - UpsideTarget2) < 1.25 Then Sell ("+Scalp.PP.d") From Entry ("(L
 {get safe}
 If Currentcontracts <> 0
 Then begin
-
-If Inpositionbarcount > 10
-and highest(high,Inpositionbarcount) - lowest(low,Inpositionbarcount) < 7
-then Sell ("+Scalp.SafeStop.g") From Entry ("(L)Scalp") all contracts Next Bar at GlobexLow -.5  stop;
-
-	If Currentcontracts < 4
-	then Sell ("+Scalp.SafeStop.a") From Entry ("(L)Scalp") all contracts Next Bar at Bounceline - 1 stop;
-	If Currentcontracts < 3
-	then Sell ("+Scalp.SafeStop.b") From Entry ("(L)Scalp") all contracts Next Bar at GlobexHigh - 1 stop;
-	If Currentcontracts < 2 
-	then Sell ("+Scalp.SafeStop.c") From Entry ("(L)Scalp") all contracts Next Bar at UpsideTarget1 - 1 stop;
+If Currentcontracts < 4
+then Sell ("+Scalp.SafeStop.a") From Entry ("(L)Scalp") all contracts Next Bar at Bounceline - 1 stop;
+If Currentcontracts < 3
+then Sell ("+Scalp.SafeStop.b") From Entry ("(L)Scalp") all contracts Next Bar at GlobexHigh - 1 stop;
+If Currentcontracts < 2 
+then Sell ("+Scalp.SafeStop.c") From Entry ("(L)Scalp") all contracts Next Bar at UpsideTarget1 - 1 stop;
 End;
 
 {stop out}
@@ -1026,8 +1024,7 @@ End;
 {scale out}
 Sell ("+ERC.GH.a") From Entry ("(L)ERC<GBH") 2 contracts Next Bar at GlobexHigh - .5 limit;                                                    
 Sell ("+ERC.T1.a") From Entry ("(L)ERC<GBH") 1 contracts Next Bar at UpsideTarget1 - .5 limit;
-Sell ("+ERC.T2.a") From Entry ("(L)ERC<GBH") 1 contracts Next Bar at UpsideTarget2 - .75 limit;
-Sell ("+ERC.PP.a") From Entry ("(L)ERC<GBH") 1 contracts Next Bar at PP - .75 limit;
+Sell ("+ERC.T2.a") From Entry ("(L)ERC<GBH") 1 contracts Next Bar at UpsideTarget2 - .75 limit;                                                
 
 {S10 PreHook}
 If High < S10 
@@ -1059,6 +1056,14 @@ End;
 {stop out}
 Sell ("+ERC<GBH.Stopout") From Entry ("(L)ERC<GBH") all contracts Next Bar at ERCEntry.a - 5.5 stop;                                            
 {===============END ERC ENTRIES below Globex High===============}
+
+
+
+
+
+
+
+
 
 
 
@@ -1172,12 +1177,12 @@ If S3 < DownsideTarget2 - 1.5 then Buytocover ("-BL.S3.f") From Entry ("(S)BL") 
 {get safe}
 If Currentcontracts <> 0
 Then begin
-	If Currentcontracts < 4
-	then Buytocover ("-BL.SafeStop.a") From Entry ("(S)BL") all contracts Next Bar at Bounceline + 1.75 stop;    
-	If Currentcontracts < 3
-	then Buytocover ("-BL.SafeStop.b") From Entry ("(S)BL") all contracts Next Bar at Bounceline - 4 stop;                  
-	If Currentcontracts < 2
-	then Buytocover ("-BL.SafeStop.c") From Entry ("(S)BL") all contracts Next Bar at GlobexLow + 1 stop;                     
+If Currentcontracts < 4
+then Buytocover ("-BL.SafeStop.a") From Entry ("(S)BL") all contracts Next Bar at Bounceline + 1.75 stop;    
+If Currentcontracts < 3
+then Buytocover ("-BL.SafeStop.b") From Entry ("(S)BL") all contracts Next Bar at GlobexLow + 6 stop;                  
+If Currentcontracts < 2
+then Buytocover ("-BL.SafeStop.c") From Entry ("(S)BL") all contracts Next Bar at GlobexLow + 1 stop;                     
 End;
 
 {stop out}
@@ -1626,22 +1631,21 @@ Buytocover ("-ERC.Stop.f") From Entry ("(S)ERC<GBH") all contracts Next Bar at E
 
 
 {00000000000000========SHORT ERC ENTRY between Bounceline and DownsideTarget2, ERC<BL======000000000000000
-If S.ERC.below.BL = 1
+If S.ERC.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
 And Time < 1445                                 
 And High - Close > 3                                                   
 And Close < S10
-And Close > S10 - 12
 And LTopen < S10_30 + 9                                                
 And Close < Bounceline                          
 And Close > DownsideTarget2
+And AbsValue (Bounceline - Close) > 1         
+And S10_30 < S10_30[1] +.1                                          
+And MyMACD < -.1  
+And MyMACD_30 < + 1                                                      
 And AbsValue (Close - PP) > 2.5 
-And AbsValue (Low - DownsideTarget1) > 1
-And 
-	((Fifty_Day_MA_ready = 1 and Close < Fifty_Day_MA_AVG)
-	Or
-	Fifty_Day_MA_ready = 0)  
+//And Highest (Close, 5) - Lowest (Close, 5) > 3                    
               
 Then begin
 Sellshort ("(S)ERC<BL") 4 contracts next bar at Close + .75 limit;
@@ -1649,13 +1653,12 @@ ERCEntry.x = Close + .75;
 End;
 
 {scale out}
-If ERCEntry.x > GlobexLow + 1.5 then Buytocover ("-ERC.GBL.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at GlobexLow + .5 limit;                          
-If ERCEntry.x > DownsideTarget1 + 1.5 then Buytocover ("-ERC.T1.x") From Entry ("(S)ERC<BL") 2 contracts Next Bar at DownsideTarget1 + .5 limit;            
+//Buytocover ("-ERC.GBL") From Entry ("(S)ERC<BL") 1 contracts Next Bar at GlobexLow + .5 limit; need an iff statement, if entry price is less than bounceline minus 3. . .                         
+Buytocover ("-ERC.T1.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at DownsideTarget1 + .5 limit;            
 Buytocover ("-ERC.T2.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at DownsideTarget2 + .5 limit;
-If PP < ERCEntry.x then Buytocover ("-ERC.PP.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at PP + .5 limit;
-If S1 < ERCEntry.x then Buytocover ("-ERC.S1.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at S1 + .5 limit;                          
-If S2 < ERCEntry.x - 1.5 then Buytocover ("-ERC.S2.x") From Entry ("(S)ERC<BL") all contracts Next Bar at S2 + .5 limit;                     
-If S3 < ERCEntry.x - 1.5 then Buytocover ("-ERC.S3.x") From Entry ("(S)ERC<BL") all contracts Next Bar at S3 + .5 limit;       
+If S1 < Bounceline - 1.5 then Buytocover ("-ERC.S1.x") From Entry ("(S)ERC<BL") 1 contracts Next Bar at S1 + .5 limit;                          
+If S2 < DownsideTarget1 - 1.5 then Buytocover ("-ERC.S2.x") From Entry ("(S)ERC<BL") all contracts Next Bar at S2 + .5 limit;                     
+If S3 < DownsideTarget2 - 1.5 then Buytocover ("-ERC.S3.x") From Entry ("(S)ERC<BL") all contracts Next Bar at S3 + .5 limit;       
 
 {S10 PreHook}
 If Low > S10
@@ -1666,24 +1669,20 @@ then Buytocover ("-ERC.pre-hook.x") from Entry ("(S)ERC<BL") all contracts next 
 {get safe}          
 If Currentcontracts <> 0
 Then Begin
-	
-	If Currentcontracts < 4
-	And Close < ERCEntry.x - 2 
-	then Buytocover ("-ERC.SafeStop.x") From Entry ("(S)ERC<BL") all contracts next bar at ERCEntry.x - .25 stop;               
-		
-	If Currentcontracts < 3
-	And Close < ERCEntry.x - 2
-	And Close < GlobexLow - .5
-	then Buytocover ("-ERC.SafeStop.z") From Entry ("(S)ERC<BL") all contracts next bar at GlobexLow stop;                 
-	
-	If Currentcontracts < 2 
-	then Buytocover ("-ERC.SafeStop.zz") From Entry ("(S)ERC<BL") all contracts next bar at DownsideTarget2 + 2 stop;            
+If Currentcontracts < 4
+And ERCEntry.x - GlobexLow > 2.25 
+then Buytocover ("-ERC.SafeStop.x") From Entry ("(S)ERC<BL") all contracts next bar at ERCEntry.x - .25 stop;               
+If Currentcontracts < 4
+And Entryprice - GlobexLow <= 2.25 
+then Buytocover ("-ERC.SafeStop.y") From Entry ("(S)ERC<BL") all contracts next bar at ERCEntry.x - (ERCEntry.x - Bounceline +.5) + .25 stop;
+If Currentcontracts < 3
+then Buytocover ("-ERC.SafeStop.z") From Entry ("(S)ERC<BL") all contracts next bar at GlobexLow - 2 stop;                 
+If Currentcontracts < 2 
+then Buytocover ("-ERC.SafeStop.zz") From Entry ("(S)ERCERC<GBH") all contracts next bar at DownsideTarget2 + 2 stop;            
 End;
-} 
 
 {stop out}  
-//Buytocover ("-ERC.Stop.x") From Entry ("(S)ERC<BL") all contracts Next Bar at ERCEntry.x + 3 stop;
-                         
+Buytocover ("-ERC.Stop.x") From Entry ("(S)ERC<GBH") all contracts Next Bar at ERCEntry.x + 3 stop; }                         
 {00000000000000========SHORT ERC ENTRY between Bounceline and DownsideTarget2, ERC<BL======000000000000000}
 
 
