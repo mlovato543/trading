@@ -546,7 +546,7 @@ And AbsValue (PP - Close) > .5
 And Highest (Close, 21) - Lowest (Close, 9) > 2.75      
 
 //And Highest(MyMACD,4) < 1.1       {new code 3.20 no help}                                 
-And AbsValue (PP - Close) > .5 
+//And AbsValue (PP - Close) > .5 
 {And Highest(MyMACD, 4) - Highest(MyMACD, 1) > - .6    couldn't hand optimize this, run thru the optimizer }                            
    
 And 
@@ -639,7 +639,6 @@ And AbsValue((Highest (high,10)- GlobexHigh))>2
 And S10 > S10[1]+ .5                                                
 And LTOpen > S10_30                                                             
 And MyMACD > .1
-And Highest(MyMACD,4) < .6            {new code 3.20 }  
 And MyMACD_30 > 0  
 And MyMACD > MyMACD [7] -.35              
 And PredictedS10 + S10Range < UpsideTarget1 - 1
@@ -703,7 +702,6 @@ And SessionHigh < UpsideTarget2 - 1
 And PredictedS10 + S10Range < UpsideTarget2 - 2
 And PredictedS10 + S10Range >= Upsidetarget1 -.25 
 And MyMACD > .1  
-And Highest(MyMACD,4) < 1            {new code 3.20 } 
 //And Highest(MyMACD, 3) - Highest(MyMACD, 1) > - .1  {couldn't hand optimize this to any advantage, run thru the optimizer }                                                
 And Highest (Close, 20) - Lowest (Close, 20) > 4                 
 
@@ -1544,9 +1542,9 @@ And AbsValue (Close - PP) > 3.5
 And Highest (Close, 10) - Lowest (Close, 10) > 3 
 //And Lowest(MyMACD, 1) - Lowest(MyMACD, 7) < + .3  {needs to be optomized}                 
 {And 
-	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG + FDMA_range)
+	((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG +44)
 	Or
-	Fifty_Day_MA_ready = 0)  dropped profits by 3k but chart shows this should work}
+	Fifty_Day_MA_ready = 0)} 
                                 
 
 Then begin
