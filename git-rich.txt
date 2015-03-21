@@ -688,6 +688,12 @@ End;
 
 
 {===============LONG S10 ENTRIES below Upside Target 2, (S10<T2)Master===============}
+{optimized for infinity range}
+Inputs:
+LS10underT2_H (36),
+LS10underT2_L (22),
+LS10underT2_R (4)
+;
 If L.S10.below.T2 = 1
 And Marketposition = 0
 And Time >= 825 
@@ -703,7 +709,7 @@ And PredictedS10 + S10Range < UpsideTarget2 - 2
 And PredictedS10 + S10Range >= Upsidetarget1 -.25 
 And MyMACD > .1  
 //And Highest(MyMACD, 3) - Highest(MyMACD, 1) > - .1  {couldn't hand optimize this to any advantage, run thru the optimizer }                                                
-And Highest (Close, 20) - Lowest (Close, 20) > 4                 
+And Highest (Close, 36) - Lowest (Close, 22) > 4                  
 
 Then begin
 Buy ("(L)S10<T2") 4 contracts next bar at PredictedS10 + S10Range limit;
@@ -840,6 +846,11 @@ Sell ("+Scalp.Stopout") From Entry ("(L)Scalp") all contracts Next Bar at Globex
 
  
 {===============LONG BOUNCE ENTRY (L)BL===============}
+Inputs:
+LB_H (27),
+LB_L (7),
+LB_R (2)
+;
 If L.BL = 1
 And Marketposition = 0
 And Time >= 825 
@@ -894,6 +905,11 @@ Sell ("+BL.Stopout") From Entry ("(L)BL") all contracts Next Bar at Bounceline -
 
 
 {===============LONG Z-PATTERN GlobexHigh ENTRY (L)Z-GBH Master===============}
+Inputs:
+LZ_GBH_H (36),
+LZ_GBH_L (28),
+LZ_GBH_R (2.75)
+;
 If L.Z_GBH = 1
 And Marketposition = 0
 And Time >= 825 
@@ -912,7 +928,8 @@ And LTopen > S10_30 - 1
 And MyMACD_30 > -.4                                      
 And MyMACD > -.4
 And AbsValue(PP - GlobexHigh) > 1                        
-And Highest(high,10) < UpsideTarget1 - 2              
+And Highest(high,10) < UpsideTarget1 - 2
+And Highest (Close, 36) - Lowest (Close, 28) > 2.75 {optimization unfinished}               
                                                                  
 Then begin
 Buy ("(L)Z-GBH") 4 contracts next bar at GlobexHigh + 0.75 limit;
