@@ -637,6 +637,13 @@ End;
 
 
 {===============LONG S10 ENTRIES below Upside Target 1, (S10<T1)===============}
+inputs:
+LS10_a (0),
+LS10_b (0),
+LS10_c (0),
+LS10_d (0)
+;
+
 If L.S10.below.T1 = 1
 And Marketposition = 0
 And Time >= 825 
@@ -657,7 +664,9 @@ And PredictedS10 + S10Range >= GlobexHigh -1
 And AbsValue(PP - Bounceline) > .5
 //And Highest(MyMACD,1) < .75     
 And Highest(MyMACD,1) - Highest(MyMACD,4 ) > -.68                   
-And Highest (Close, 17) - Lowest (Close, 7) > 9     
+And (Highest (Close, 17) - Lowest (Close, 7) > 9  or (
+	Highest (Close, 2) - Lowest (Close, 10) > 9 and time < 980
+	))   
 
 
 Then begin
@@ -1048,6 +1057,7 @@ And Time >= 825
 And Time < 1445                                          
 And Close < GlobexHigh - 1
 And Close - Low  > 4
+//And Close > Open                                    
 And Close > S10
 And MyMACD > + .1                                        
 And AbsValue(Highest(high,5) - GlobexHigh) > .75
@@ -1848,6 +1858,8 @@ End;
 {scale out}
 Buytocover ("-Z-GBL.T1") From Entry ("(S)Z-GBL") 1 contracts Next Bar at DownsideTarget1 + .5 limit;                               
 Buytocover ("-Z-GBL.T2") From Entry ("(S)Z-GBL") 1 contracts Next Bar at DownsideTarget2 + .75 limit;
+
+If CurrentContracts < 4 and PP <= Downsidetarget2 Then Buytocover ("-(S)Z-GBL.PP") From Entry ("(S)Z-GBL") 2 contracts Next Bar at PP + .50 limit; 
 If S1 < DownsideTarget2 Then Buytocover ("-(S)Z-GBL.S1") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S1 + .50 limit;            
 If S2 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S2") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S2 + .50 limit;            
 If S3 < DownsideTarget1 Then Buytocover ("-(S)Z-GBL.S3") From Entry ("(S)Z-GBL") 1 contracts Next Bar at S3 + .50 limit;
