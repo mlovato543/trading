@@ -558,7 +558,7 @@ And Low[1] >= S10 [1]
 And low[2] >= S10 [2]
 And S10TrendCount >0 
 And AbsValue((Highest (high,10)- GlobexHigh)) > 0.5
-And AbsValue((Highest (high,10)- PP)) > 0
+And AbsValue((Highest (high,10)- PP)) >= 2
 And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
 And LTopen > S10_30 - 4                                   
