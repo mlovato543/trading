@@ -163,6 +163,7 @@ S10 (0),
 S19 (0),
 S10_30(0),
 S19_30 (0),
+S300 (0),
 Bounceline (0),
 UpsideTarget1 (0),
 UpsideTarget2 (0),
@@ -207,6 +208,8 @@ RangeSet = 1
 Else Begin
 RangeSet = 0;
 End;
+
+S300 = Average (Close,300);
 
 {----------END JOHN EMINI LINES----------}
 
@@ -517,6 +520,29 @@ end;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {===============LONG OPEN===============}                     
 
 If L.Open = 1
@@ -537,7 +563,7 @@ Then Buy ("(L)Open") 4 contracts next bar at Close - .25 limit;
 Sell ("-L.Open.GH") From Entry ("(L)Open") 0 contracts Next Bar at GlobexHigh - .5 limit;           
 Sell ("-L.Open.T1") From Entry ("(L)Open") 1 contracts Next Bar at UpsideTarget1 - .5 limit;
 Sell ("-L.Open.T2") From Entry ("(L)Open") 1 contracts Next Bar at UpsideTarget2 - .75 limit;
-Sell ("-L.Open.10pt") From Entry ("(L)Open") 2 contracts Next Bar at EntryPrice + 10 limit;
+If CurrentContracts <> 0 then Sell ("-L.Open.10pt") From Entry ("(L)Open") 2 contracts Next Bar at EntryPrice + 10 limit;
 
 Sell ("-L.Open.BL.Stop") From Entry ("(L)Open") all contracts Next Bar at Bounceline - .75 stop;
 
@@ -565,7 +591,8 @@ And LTopen > S10_30 - 4
 And AbsValue (PP - Close) > .5
 And Highest(MyMACD, 1) - Highest(MyMACD, 4) >  -.5        
 And Highest(MyMACD,3) < .6                                     
-And Highest (Close, 21) - Lowest (Close, 9) > 2.75  
+And Highest (Close, 21) - Lowest (Close, 9) > 2.75
+And (Close > S300 - 5  or AbsValue(Close - S1) < 2)
                                                      
 And 
  ((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG - 44)
@@ -831,8 +858,18 @@ And MyMACD > - .3
 And (Lowest (low, 5) > GlobexLow - 1.25 or lowest (close,5) > GlobexLow)  
 And Close > S1   
 And Highest(MyMACD,1) - Highest(MyMACD,7) > -.5
-And Highest (Close, 19) - Lowest (Close, 12) > 2.8 
-                                                 
+And Highest (Close, 19) - Lowest (Close, 12) > 2.8
+
+{
+And (
+	   (AbsValue(Low - S1) <= 2 and Lowest(Low,5) >= S1) //Is close to S1
+	   or 
+	   (AbsValue(Low - PP) <= 2 and Lowest(Low,5) >= PP) //Is close to PP
+	   or
+	   (AbsValue (Low - S1) > 2 and AbsValue (Low - PP) > 2)
+	 )
+}	   
+	                                    
 Then begin
 Buy ("(L)Scalp") 4 contracts next bar at GlobexLow + 1.25 limit;                     
 End;  
@@ -960,8 +997,8 @@ Sell ("+Z-GBH.T2") From Entry ("(L)Z-GBH") 2 contracts Next Bar at UpsideTarget2
 Sell ("+Z-GBH.12pointer") From Entry ("(L)Z-GBH") 1 contracts Next Bar at GlobexHigh + .75 + 12 limit;                                 
 If PP > GlobexHigh + 2.25 Then Sell ("+Z-GBH.PP") From Entry ("(L)Z-GBH") 1 contracts Next Bar at PP - .5 limit;                                 
 If R1 > UpsideTarget1 Then Sell ("+Z-GBH.R1") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R1 - .5 limit;   
-If R2 > GlobexHigh + .75 and S10 < GlobexHigh Then Sell ("+Z-GBH.R2") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R2 - .5 limit;             
-If R3 > GlobexHigh + .75 Then Sell ("+Z-GBH.R3") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R3 - .75 limit;      
+If R2 > GlobexHigh + 1.5 and S10 < GlobexHigh Then Sell ("+Z-GBH.R2") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R2 - .5 limit;             
+If R3 > GlobexHigh + 1.5 Then Sell ("+Z-GBH.R3") From Entry ("(L)Z-GBH") 1 contracts Next Bar at R3 - .75 limit;      
 
 {get safe}
 If Currentcontracts <> 0
@@ -996,7 +1033,7 @@ And Close < Bounceline + 2.5
 And Low > Bounceline -.5
 And Low < Bounceline + 2
 And High - Close < 3
-And Highest(high,10) > Bounceline + 2                            
+And Highest(high,10) > Bounceline + 2                           
 And Lowest (low, 20) < Bounceline -1.75
 And AbsValue(Highest (high,3) - GlobexHigh) > 0
 And (S10 < Bounceline +.2 or S19 < Bounceline +.2)
@@ -1065,7 +1102,8 @@ And AbsValue(Highest(high,5) - Bounceline) > .75
 And (PP - Close) > 1.5   
 And Highest(MyMACD,3) < 1.5                          
 And Highest(MyMACD,1) - Highest(MyMACD, 3) > -1          
-And Highest (Close, 10) - Lowest (Close, 10) > 4 
+And Highest (Close, 10) - Lowest (Close, 10) > 4
+//And (Close > S300 or (AbsValue(Close - Lowest(low,3)) < 3 and Close < S300 - 10))
     
 Then begin
 Buy ("(L)ERC<GBH") 4 contracts next bar at Close - .75 limit;
@@ -1562,7 +1600,9 @@ And AbsValue (Bounceline - Close) > 1
 And AbsValue (Close - PP) > 2.5
 And AbsValue (Close - S1) > 2
 And Lowest(MyMACD, 1) - Lowest(MyMACD, 23) < + 1                   
-And Highest (Close, 11) - Lowest (Close, 12) > 4.4 
+And Highest (Close, 11) - Lowest (Close, 12) > 4.4
+And (Close < S300 + 5 or (High - Close > 5 and Close < S300 + 10))
+ 
 
 {And              {ADDED THIS 50 DAY CODE}
  ((Fifty_Day_MA_ready = 1 and Close < Fifty_Day_MA_AVG)
@@ -1694,7 +1734,8 @@ And S10 < S10[1] +.1
 And DownsideTarget2 - Close > .5
 And Lowest(MyMACD, 5) < 1.1
 And Lowest(MyMACD, 1) - Lowest(MyMACD, 8) < + .19       
-And Highest (Close, 20) - Lowest (Close, 10) > 7.75                      
+And Highest (Close, 20) - Lowest (Close, 10) > 7.75
+And AbsValue(Lowest(Low,3) - S1) > 1                      
 
 Then begin
 Sellshort ("(S)ERC<T2") 4 contracts next bar at Close + .25 limit;
@@ -1743,7 +1784,20 @@ And Lowest(low,10) > DownsideTarget1 + .5
 And AbsValue(PP - GlobexLow) > 1.25
 And (Bounceline - GlobexLow > 2.5)                    
 And MyMACD_30 < - .7                                          
-And S10_30 < S10_30[1]  
+And S10_30 < S10_30[1]
+
+{Matt's Way}
+And AbsValue(Low - PP) > .75 
+And AbsValue(Low - S1) > .75 
+And AbsValue(Low - S2) > .75 
+And AbsValue(Low - S3) > .75
+
+{Dad's Gay}
+And (Low < PP or Low > PP + 3.75)
+And (Low < S1 or Low > S1 + 3.75)
+And (Low < S2 or Low > S2 + 3.75)
+And (Low < S3 or Low > S3 + 3.75)
+
 And Highest (Close, 17) - Lowest (Close, 5) > 6   
                                                          
 Then begin
