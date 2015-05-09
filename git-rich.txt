@@ -10,6 +10,7 @@ L.S10.below.T2 (1),
 L.S10.above.T2 (1),
 L.Scalp (1),
 L.BL (1),
+L.Z_UST1 (1),
 L.Z_GBH (1),
 L.Z_BL (1),
 L.ERC.below.GBH (1),
@@ -593,6 +594,14 @@ And Highest(MyMACD, 1) - Highest(MyMACD, 4) >  -.5
 And Highest(MyMACD,3) < .6                                     
 And Highest (Close, 21) - Lowest (Close, 9) > 2.75
 And (Close > S300 - 5  or AbsValue(Close - S1) < 2)
+//And MyMACD_30 > - 1                         {to aliiminate set ups where the LT MACD is too far below zero line}      
+//And AbsValue (Bounceline - Close) > 1.5   {for the next 3 lines, trying not to take a trade up into these 3 levels}
+         //And AbsValue (GlobexLow - Close) > 2
+         //And AbsValue (DownsideTarget1 - Close) > 2
+         //And AbsValue (S1 - Close) > 2
+         //And AbsValue (S2 - Close) > 2
+         //need a stop out if S19 holds as resistance
+         //And Highest(MyMACD_30,1) - Highest(MyMACD_30, 3) > -.07   {to eliminate severe downsloping LT MACD}
                                                      
 And 
  ((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG - 44)
@@ -961,6 +970,76 @@ End;
 {stop out}
 Sell ("+BL.Stopout") From Entry ("(L)BL") all contracts Next Bar at Bounceline - 4.75 stop;                   
 {===============END LONG BOUNCE ENTRY===============}
+
+
+
+
+
+
+
+{===============LONG Z-PATTERN UpsideTarget1 ENTRY (L)Z-T1===============}
+If L.Z_UST1 = 1
+And Marketposition = 0
+And Time >= 825 
+And Time < 1430                                        
+And Close >= UpsideTarget1   
+And Low >= UpsideTarget1 -.75                                 
+And Highest(high,10) > UpsideTarget1 + 1         
+And UpsideTarget1 - GlobexHigh > 2.25                      
+And AbsValue((Highest (high,10)-R2))>1
+And S10 < UpsideTarget1 + 3.75                               
+And S10 > S10[1]                                         
+And LTopen > S10_30 - 1                                   
+And MyMACD_30 > -.4                                      
+And MyMACD > -.4
+And AbsValue(PP - UpsideTarget1) > 1                        
+And Highest(high,10) < UpsideTarget2 -2  
+And Highest(MyMACD, 1) - Highest(MyMACD, 10) > -.66 
+And Highest(MyMACD,3) < 1.9                           
+And Highest (Close, 18) - Lowest (Close, 12) > 2.4                 
+                      
+                                                                        
+Then begin
+Buy ("(L)Z-UST1") 4 contracts next bar at UpsideTarget1 + 0.75 limit;
+End;
+
+{scale out}
+Sell ("+Z-UST1.T2") From Entry ("(L)Z-UST1") 1 contracts Next Bar at UpsideTarget2 - .5 limit;                                                         
+Sell ("+Z-UST1.6pointer") From Entry ("(L)Z-UST1") 2 contracts Next Bar at UpsideTarget1 + .75 + 6 limit;                                     
+Sell ("+Z-UST1.12pointer") From Entry ("(L)Z-UST1") 1 contracts Next Bar at UpsideTarget1 + .75 + 12 limit;                                 
+If PP > UpsideTarget1 + 2.25 Then Sell ("+Z-UST1.PP") From Entry ("(L)Z-UST1") 1 contracts Next Bar at PP - .5 limit;                                 
+If R1 > UpsideTarget1 Then Sell ("+Z-UST1.R1") From Entry ("(L)Z-UST1") 1 contracts Next Bar at R1 - .5 limit;   
+If R2 > UpsideTarget1 + .75 and S10 < GlobexHigh Then Sell ("+Z-UST1.R2") From Entry ("(L)Z-UST1") 1 contracts Next Bar at R2 - .5 limit;             
+If R3 > UpsideTarget1 + .75 Then Sell ("+Z-UST1.R3") From Entry ("(L)Z-UST1") 1 contracts Next Bar at R3 - .75 limit;     
+
+{get safe}
+If Currentcontracts <> 0
+Then begin
+If Currentcontracts < 4
+then Sell ("+Z-UST1.SafeStop.a") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget1 - .75 stop;       
+If Currentcontracts < 3
+then Sell ("+Z-UST1.SafeStop.b") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget2 - 5 stop;                       
+If Currentcontracts < 2
+then Sell ("+Z-UST1.SafeStop.c") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget2 - 1.5 stop;                      
+End;
+
+{stop out}
+If S10 < GlobexHigh - 1.5 then
+Sell ("+Z-UST1>S10.Stop") From Entry ("(L)Z-UST1") all contracts Next Bar at S10 - 1 stop
+Else 
+Sell ("+Z-UST1.Stopout") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget1 - 4.75 stop;                         
+{===============END LONG Z-PATTERN UpsideTarget1 ENTRY===============}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
