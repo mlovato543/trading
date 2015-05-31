@@ -1,5 +1,5 @@
-{aaTerminator Strategy 4/02/15 rev  4/02/15 @ 7.19  $748,148,  1.1.07 to 4.1.15}
-{Matt's Version: rev 3/19/15 @ 9:05 $647,032 1.1.07 to 3.18.15  4.17 $752,379, agrees with master}
+
+{aaTerminator Strategy (to 4/29/15), 5/09/15, REV 5/25/15 @ 7.59  $685,385 with all on, without Open trades on $796,901,  }
 
 
 Inputs:
@@ -240,9 +240,23 @@ S300 = Average (Close,300);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {------------------------------------------------------------------}
 
 {-------------------------BEGIN STRATEGY-------------------------------}
+
+
 
 
 
@@ -410,6 +424,7 @@ Then S10TrendCount = S10TrendCount - 1;
 
 
 
+
 {----------BEGIN CALCULATE 10 DAY MA ARRAY----------}
 Array:  Ten_Day_MA[] (0);
 Array_SetMaxIndex(Ten_Day_MA, 11) ;
@@ -544,20 +559,41 @@ end;
 
 
 
-{===============LONG OPEN===============}                     
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{===============LONG OPEN===============}                  
 If L.Open = 1
 And Marketposition = 0
 And time > 825
 And time < 840
-And S19 > S19[1]
-And S10_30 > S10_30[1]
-And Close > Bounceline
-And Close < UpsideTarget1 - 2
-And Close > S10
-And GlobexHigh - Bounceline > 5
-And AbsValue(Highest(High,10) - GlobexHigh) > 1
-And AbsValue(R1 - Highest(High,10)) > 1
+And (UpsideTarget1-Bounceline) > 10
+And Close > Bounceline - .5                          
+And Close < GlobexHigh - 2
+And Lowest (low,3) > Bounceline - 1
+//And S10 > S10[1] - 1
+And LTopen > S10_30 
+//And (Close - PP) > 1  matt need help, bnot working on 2.27.14 and 10.14.14
+//And S19 > S19[1]
+//And S10_30 > S10_30[1]
+//And Close > S10
+//And AbsValue(Highest(High,10) - GlobexHigh) > 1
+//And AbsValue(R1 - Highest(High,10)) > 1
+
 
 Then Buy ("(L)Open") 4 contracts next bar at Close - .25 limit;
 
@@ -566,9 +602,10 @@ Sell ("-L.Open.T1") From Entry ("(L)Open") 1 contracts Next Bar at UpsideTarget1
 Sell ("-L.Open.T2") From Entry ("(L)Open") 1 contracts Next Bar at UpsideTarget2 - .75 limit;
 If CurrentContracts <> 0 then Sell ("-L.Open.10pt") From Entry ("(L)Open") 2 contracts Next Bar at EntryPrice + 10 limit;
 
-Sell ("-L.Open.BL.Stop") From Entry ("(L)Open") all contracts Next Bar at Bounceline - .75 stop;
+Sell ("-L.Open.BL.Stop") From Entry ("(L)Open") all contracts Next Bar at Bounceline - 1.75 stop;  
 
 {===============END LONG OPENING TRADE===============}
+
 
 
 
@@ -585,7 +622,7 @@ And Low[1] >= S10 [1]
 And low[2] >= S10 [2]
 And S10TrendCount >0 
 And AbsValue((Highest (high,10)- GlobexHigh)) > 0.5
-And AbsValue((Highest (high,10)- PP)) >= 2
+And AbsValue((Highest (high,10)- PP)) > 0  {ON OLD CODE THIS IS 0, ADDES 2K TO PROFITS, MATTS IS  >= 2}
 And PredictedS10 + S10Range < GlobexHigh - 1
 And PredictedS10 > DownsideTarget1
 And LTopen > S10_30 - 4                                   
@@ -593,15 +630,23 @@ And AbsValue (PP - Close) > .5
 And Highest(MyMACD, 1) - Highest(MyMACD, 4) >  -.5        
 And Highest(MyMACD,3) < .6                                     
 And Highest (Close, 21) - Lowest (Close, 9) > 2.75
-And (Close > S300 - 5  or AbsValue(Close - S1) < 2)
+And (Close > S300 - 3.75
+ or AbsValue(Lowest (low, 15) - S1) < 3 
+ or AbsValue(Lowest (low, 15) - S2) < 2
+ or AbsValue(Lowest (low, 15) - PP) < 3
+ or AbsValue(Lowest (low, 15) - DownsideTarget1) < 3
+ or AbsValue(Lowest (low, 15) - DownsideTarget2) < 2
+     //or AbsValue(Lowest (low, 15) - Bounceline) < 3
+     //or AbsValue(Lowest (low, 15) - GlobexLow) < 1 
+ ) 
 //And MyMACD_30 > - 1                         {to aliiminate set ups where the LT MACD is too far below zero line}      
 //And AbsValue (Bounceline - Close) > 1.5   {for the next 3 lines, trying not to take a trade up into these 3 levels}
          //And AbsValue (GlobexLow - Close) > 2
          //And AbsValue (DownsideTarget1 - Close) > 2
          //And AbsValue (S1 - Close) > 2
          //And AbsValue (S2 - Close) > 2
-         //need a stop out if S19 holds as resistance
-         //And Highest(MyMACD_30,1) - Highest(MyMACD_30, 3) > -.07   {to eliminate severe downsloping LT MACD}
+         //need a stop out if S19 holds as resistance AND NEED SEVERE SLOPING LT S10
+         //And Highest(MyMACD_30,1) - Highest(MyMACD_30, 3) > -.06  {to eliminate severe downsloping LT MACD}
                                                      
 And 
  ((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG - 44)
@@ -641,11 +686,11 @@ If Currentcontracts <> 0
 Then Begin
  If Currentcontracts < 4
  And GlobexHigh - Entryprice > 2.25 
- then Sell ("+S10.SafeStop.a") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice -.75 stop;                                         
+ then Sell ("+S10.SafeStop.a") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice - 1.5 stop;                                         
  
  If Currentcontracts < 4
  And GlobexHigh - Entryprice <= 2.25 
- then Sell ("+S10.SafeStop.b") From Entry ("(L)S10<GBH") all contracts next bar at EntryPrice - (GlobexHigh -.5 - EntryPrice) +.25 stop; 
+ then Sell ("+S10.SafeStop.b") From Entry ("(L)S10<GBH")0 contracts next bar at EntryPrice - (GlobexHigh -.5 - EntryPrice) +.25 stop; 
           
  
  If Currentcontracts < 3
@@ -667,6 +712,8 @@ Then Begin
  Sell ("+S10<GBH.Stopout") From Entry ("(L)S10<GBH") all contracts Next Bar at EntryPrice - 6 stop;                       
 End;
 {===============END LONG S10 ENTRIES below Globex High===============}
+
+
 
 
 
@@ -701,8 +748,8 @@ And AbsValue(PP - Bounceline) > .5
 //And Highest(MyMACD,1) < .75     
 And Highest(MyMACD,1) - Highest(MyMACD,4 ) > -.68                   
 And (Highest (Close, 17) - Lowest (Close, 7) > 9  or (
-	Highest (Close, 2) - Lowest (Close, 10) > 9 and time < 980
-	))   
+ Highest (Close, 2) - Lowest (Close, 10) > 9 and time < 980
+ ))   
 
 
 Then begin
@@ -746,6 +793,7 @@ End;
 
 
 
+
 {===============LONG S10 ENTRIES below Upside Target 2, (S10<T2)Master===============}
 If L.S10.below.T2 = 1
 And Marketposition = 0
@@ -765,6 +813,7 @@ And MyMACD > .1
 And Highest(MyMACD,2) < 1.1 
 And Highest(MyMACD, 1) - Highest(MyMACD, 3) > - 1.9                                                                
 And Highest (Close, 36) - Lowest (Close, 22) > 4
+
 
 
 
@@ -800,6 +849,7 @@ End;
 {stop out}
 Sell ("+S10<T2.Stopout") From Entry ("(L)S10<T2") all contracts Next Bar at S10Entry.c - 2.75 stop;
 {===============END LONG S10 ENTRIES below Upside Target 2===============}
+
 
 
 
@@ -868,17 +918,10 @@ And (Lowest (low, 5) > GlobexLow - 1.25 or lowest (close,5) > GlobexLow)
 And Close > S1   
 And Highest(MyMACD,1) - Highest(MyMACD,7) > -.5
 And Highest (Close, 19) - Lowest (Close, 12) > 2.8
+And S1 - GlobexLow < 1
+And Close < S300 + 1
 
-{
-And (
-	   (AbsValue(Low - S1) <= 2 and Lowest(Low,5) >= S1) //Is close to S1
-	   or 
-	   (AbsValue(Low - PP) <= 2 and Lowest(Low,5) >= PP) //Is close to PP
-	   or
-	   (AbsValue (Low - S1) > 2 and AbsValue (Low - PP) > 2)
-	 )
-}	   
-	                                    
+                                     
 Then begin
 Buy ("(L)Scalp") 4 contracts next bar at GlobexLow + 1.25 limit;                     
 End;  
@@ -977,7 +1020,10 @@ Sell ("+BL.Stopout") From Entry ("(L)BL") all contracts Next Bar at Bounceline -
 
 
 
-{===============LONG Z-PATTERN UpsideTarget1 ENTRY (L)Z-T1===============}
+
+
+
+{===============LONG Z-PATTERN UpsideTarget1 ENTRY (L)Z-T1===============
 If L.Z_UST1 = 1
 And Marketposition = 0
 And Time >= 825 
@@ -1027,8 +1073,15 @@ End;
 If S10 < GlobexHigh - 1.5 then
 Sell ("+Z-UST1>S10.Stop") From Entry ("(L)Z-UST1") all contracts Next Bar at S10 - 1 stop
 Else 
-Sell ("+Z-UST1.Stopout") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget1 - 4.75 stop;                         
+Sell ("+Z-UST1.Stopout") From Entry ("(L)Z-UST1") all contracts Next Bar at UpsideTarget1 - 4.75 stop; }                        
 {===============END LONG Z-PATTERN UpsideTarget1 ENTRY===============}
+
+
+
+
+
+
+
 
 
 
@@ -1100,6 +1153,7 @@ Sell ("+Z-GBH.Stopout") From Entry ("(L)Z-GBH") all contracts Next Bar at Globex
 
 
 
+
 {===============LONG Z-PATTERN Bounceline ENTRY (L)Z-BL Master===============}
 If L.Z_BL = 1
 And Marketposition = 0
@@ -1166,6 +1220,7 @@ Sell ("+Z-BL.Stopout") From Entry ("(L)Z-BL") all contracts Next Bar at Bounceli
 
 
 
+
 {===============LONG ERC ENTRIES below Globex High  (L)ERC<GBH===============}
 If L.ERC.below.GBH = 1
 And Marketposition = 0
@@ -1182,8 +1237,9 @@ And (PP - Close) > 1.5
 And Highest(MyMACD,3) < 1.5                          
 And Highest(MyMACD,1) - Highest(MyMACD, 3) > -1          
 And Highest (Close, 10) - Lowest (Close, 10) > 4
-//And (Close > S300 or (AbsValue(Close - Lowest(low,3)) < 3 and Close < S300 - 10))
-    
+And AbsValue(High - PP) > 1.25
+And AbsValue(High - R1) > 1.75 
+  
 Then begin
 Buy ("(L)ERC<GBH") 4 contracts next bar at Close - .75 limit;
 ERCEntry.a = Close -.75;               
@@ -1277,18 +1333,43 @@ Sell ("+ERC<GBH.Stopout") From Entry ("(L)ERC<GBH") all contracts Next Bar at ER
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {000000000000000000000000000000000000000000000000000000000000000000000000000000=======SHORT ENTRIES=======00000000000000000000000000000000000000000000000000000000000000000}
 
 
 
-{00000000000000========SHORT OPEN======000000000000000}                       
 
+{00000000000000========SHORT OPEN======000000000000000}                     
 If S.Open = 1
 And Marketposition = 0
 And time > 825
 And time < 840
 And S19 < S19[1]
-And S10_30 < S10_30[1]
+And S10_30 < S10_30[1]                           {ADD QUALIFIER, RANGE >10 PTS}
 And Close < Bounceline
 And Close > DownsideTarget1 + 2
 And Close < S10
@@ -1306,12 +1387,6 @@ Buytocover ("-S.Open.10pt") From Entry ("(S)Open") 2 contracts Next Bar at Entry
 Buytocover ("-S.Open.BL.Stop") From Entry ("(S)Open") all contracts Next Bar at Bounceline + .75 stop;
 
 {00000000000000=====END SHORT OPEN=======00000000000000}
-
-
-
-
-
-
 
 
 
@@ -1357,6 +1432,9 @@ then Buytocover ("-Scalp.SafeStop.c") From Entry ("(S)Scalp") all contracts Next
 Buytocover ("-Scalp.Stopout") From Entry ("(S)Scalp") all contracts Next Bar at GlobexHigh + 1  stop;                           
 End;
 {00000000000000000000000=======END OF SHORT SCALP ENTRY=======000000000000000000}
+
+
+
 
 
 
@@ -1433,6 +1511,7 @@ Buytocover ("-S10.Stopout.a") From Entry ("(S)S10>GBL") all contracts Next Bar a
 
 
 
+
 {00000000000000000=====SHORT S10 ENTRIES above Downside Target 1 (S10>T1)=======000000000000000}
 If S.S10.above.T1 = 1
 And Marketposition = 0 
@@ -1493,6 +1572,8 @@ Then Begin
  Buytocover ("-S10.Stopout.f") From Entry ("(S)S10>T1") all contracts Next Bar at Bounceline +.5 stop;     
 End;
 {0000000000000000000000=====END SHORT S10 ENTRIES above Downside Target 1========00000000000000000000}
+
+
 
 
 
@@ -1605,6 +1686,8 @@ Buytocover ("-S10.Stopout.h") From Entry ("(S)S10<T2") all contracts Next Bar at
 
 
 
+
+
 {00000000000000========SHORT ERC ENTRY above GlobexHigh (ERC>GBH)======000000000000000}
 If S.ERC.above.GBH = 1
 And Marketposition = 0
@@ -1620,7 +1703,8 @@ And AbsValue (Close - UpsideTarget1) > 1.25
 And AbsValue (Close - GlobexHigh) > 1.25       
 And AbsValue (Close - PP) > 3.5 
 And Lowest(MyMACD, 1) - Lowest(MyMACD, 20) < + 1.1  
-And Highest (Close, 11 ) - Lowest (Close, 4) > 3.6             
+And Highest (Close, 11 ) - Lowest (Close, 4) > 3.6 
+//And Close < S300 -10          
 {And 
  ((Fifty_Day_MA_ready = 1 and Close > Fifty_Day_MA_AVG +44)
  Or
@@ -1666,21 +1750,22 @@ End;
 If S.ERC.below.GBH = 1
 And Marketposition = 0
 And Time >= 825 
-And Time < 1445                                 
-And High - Close > 3                              
+And Time < 1445                              
+And High - Close > 3 
+And Open - Close > 1                           
 And Close < S10
 And LTopen < S10_30 + 9                         
 And Close < GlobexHigh                          
 And Close >= Bounceline        
 And S10_30 < S10_30[1] +.1                          
 And MyMACD < -.1 
-And MyMACD_30 < +1  
+And MyMACD_30 < +1 
 And AbsValue (Bounceline - Close) > 1                             
 And AbsValue (Close - PP) > 2.5
 And AbsValue (Close - S1) > 2
 And Lowest(MyMACD, 1) - Lowest(MyMACD, 23) < + 1                   
 And Highest (Close, 11) - Lowest (Close, 12) > 4.4
-And (Close < S300 + 5 or (High - Close > 5 and Close < S300 + 10))
+And (Close < S300 + 6 or (High - Close > 2 and Close < S300 + 10))
  
 
 {And              {ADDED THIS 50 DAY CODE}
@@ -1726,6 +1811,7 @@ End;
 {stop out}  
 Buytocover ("-ERC.Stop.f") From Entry ("(S)ERC<GBH") all contracts Next Bar at ERCEntry.f + 3 stop;                          
 {00000000000000========SHORT ERC ENTRY between GlobexHigh and Bounceline======000000000000000}
+
 
 
 
@@ -1797,6 +1883,7 @@ Buytocover ("-ERC.Stop.x") From Entry ("(S)ERC<BL") all contracts Next Bar at ER
 
 
 
+
 {============================== SHORT ERC ENTRIES below Downside Target 2 ERC<T2=================================}
 If S.ERC.below.T2 = 1
 And Marketposition = 0
@@ -1852,6 +1939,7 @@ End;
 
 
 
+
 {00000000000000000000000=======SHORT BOUNCELINE ENTRY  (S)BL=======000000000000000000}
 If S.BL = 1
 And Marketposition = 0
@@ -1864,19 +1952,12 @@ And AbsValue(PP - GlobexLow) > 1.25
 And (Bounceline - GlobexLow > 2.5)                    
 And MyMACD_30 < - .7                                          
 And S10_30 < S10_30[1]
-
-{Matt's Way}
-And AbsValue(Low - PP) > .75 
-And AbsValue(Low - S1) > .75 
-And AbsValue(Low - S2) > .75 
-And AbsValue(Low - S3) > .75
-
-{Dad's Gay}
-And (Low < PP or Low > PP + 3.75)
-And (Low < S1 or Low > S1 + 3.75)
-And (Low < S2 or Low > S2 + 3.75)
-And (Low < S3 or Low > S3 + 3.75)
-
+And Close < S300 + 2
+And AbsValue(Low - PP) > 1 
+And AbsValue(Low - S1) > 1.5 
+And AbsValue(Low - S2) > .375
+And AbsValue(Low - S3) > .375 
+And AbsValue(Low - GlobexLow) > .5
 And Highest (Close, 17) - Lowest (Close, 5) > 6   
                                                          
 Then begin
@@ -1910,7 +1991,8 @@ Buytocover ("-BL.Stopout") From Entry ("(S)BL") all contracts Next Bar at Bounce
 
 
 
-{00000000000000========SHORT Z-PATTERN Bounceline ENTRY (S)Z-BL Master======00000000000}
+
+{00000000000000========SHORT Z-PATTERN Bounceline ENTRY (S)Z-BL======00000000000}
 If S.Z_BL = 1
 And Marketposition = 0
 And Time >= 825 
@@ -1955,13 +2037,14 @@ then Buytocover ("-(S)Z-BL.SafeStop.c") From Entry ("(S)Z-BL") all contracts Nex
 End;
 
 {stop out}
-Buytocover ("-(S)Z-BL.Stopout") From Entry ("(S)Z-BL") all contracts Next Bar at Bounceline + 4. stop;                      
+Buytocover ("-(S)Z-BL.Stopout") From Entry ("(S)Z-BL") all contracts Next Bar at Bounceline + 4 stop;                      
 {00000000000000========END OF SHORT Z-PATTERN Bounceline ENTRY======00000000000}
 
 
 
 
-{00000000000000========SHORT Z-PATTERN OFF GLOBEX LOW ENTRY (S)Z-GBL Master======00000000000}
+
+{00000000000000========SHORT Z-PATTERN OFF GLOBEX LOW ENTRY (S)Z-GBL======00000000000}
 If S.Z_GBL = 1
 And Marketposition = 0
 And Time >= 825 
@@ -1976,7 +2059,7 @@ And Lowest(low,5) < GlobexLow - 2
 And Highest(high,20) > GlobexLow + 1.25   
 And (GlobexLow - PP) > 2.0                              
 And (S10 > GlobexLow + 1)
-And Lowest(low,5) > DownsideTarget1 +.25            
+And Lowest(low,5) > DownsideTarget1 + .25          
 And LTopen < S10_30                                    
 And S10_30 < S10_30[1]                                                              
 And MyMACD_30 < +.2  
@@ -2013,6 +2096,58 @@ Buytocover ("-Z-GBL.Stopout") From Entry ("(S)Z-GBL") all contracts Next Bar at 
 {00000000000000========END OF SHORT Z OF GLOBEXLOW ENTRY======00000000000}
 
 
+{00000000000000========SHORT Z-PATTERN OFF DOWNSIDETARGET1 (S)Z-DST1======00000000000 
+If S.Z_GBL = 1
+And Marketposition = 0
+And Time >= 825 
+And Time < 1430                                                
+And Open < DownsideTarget1 + .75
+And Close < DownsideTarget1
+And High > DownsideTarget1 - 1
+And High < DownsideTarget1 + 1.25                             
+And High - Low < 4.5                          
+And GlobexLow - DownsideTarget1 > 1.75
+And Lowest(low,5) < DownsideTarget1 - 2
+And Highest(high,20) > DownsideTarget1 + 1.25   
+And (DownsideTarget1 - PP) > 2.0                              
+And (S10 > DownsideTarget1 + 1)
+And Lowest(low,5) > DownsideTarget2 + .25          
+And LTopen < S10_30                                    
+And S10_30 < S10_30[1]                                                              
+And MyMACD_30 < +.2  
+And Lowest(MyMACD, 2) < -.3
+And Highest (Close, 5) - Lowest (Close, 2) > 1  
+                                                     
+
+Then begin
+Sellshort ("(S)Z-DST1") 4 contracts next bar at DownsideTarget1 - .75 limit;
+End;
+
+{scale out}
+Buytocover ("-Z-GBL.T1") From Entry ("(S)Z-GBL") 1 contracts Next Bar at DownsideTarget2 + .5 limit;                               
+//Buytocover ("-Z-GBL.T2") From Entry ("(S)Z-GBL") 1 contracts Next Bar at DownsideTarget2 + .75 limit;
+
+If CurrentContracts < 4 and PP <= Downsidetarget2 Then Buytocover ("-(S)Z-DST1.PP") From Entry ("(S)Z-DST1") 2 contracts Next Bar at PP + .50 limit; 
+If S1 < DownsideTarget2 Then Buytocover ("-(S)Z-DST1.S1") From Entry ("(S)Z-DST1") 1 contracts Next Bar at S1 + .50 limit;            
+If S2 < DownsideTarget2 Then Buytocover ("-(S)Z-DST1.S2") From Entry ("(S)Z-DST1") 1 contracts Next Bar at S2 + .50 limit;            
+If S3 < DownsideTarget2 Then Buytocover ("-(S)Z-DST1.S3") From Entry ("(S)Z-DST1") 1 contracts Next Bar at S3 + .50 limit;
+
+{get safe}
+If Currentcontracts <> 0
+Then begin
+If Currentcontracts < 4
+then Buytocover ("-Z-DST1.SafeStop.a") From Entry ("(S)Z-DST1") all contracts Next Bar at DownsideTarget1 + 2 stop;                      
+If Currentcontracts < 3
+then Buytocover ("-Z-DST1.SafeStop.b") From Entry ("(S)Z-DST1") all contracts Next Bar at DownsideTarget1 + 2 stop;                      
+If Currentcontracts < 2
+then Buytocover ("-Z-DST1.SafeStop.c") From Entry ("(S)Z-DST1") all contracts Next Bar at DownsideTarget2 + 9 stop;        
+End;
+
+{stop out}
+Buytocover ("-Z-DST1.Stopout") From Entry ("(S)Z-DST1") all contracts Next Bar at GlobexLow + 5 stop; }  
+{00000000000000========END OF SHORT Z OF DOWNSIDETARGET1 ENTRY======00000000000}
+
+
 
 
 
@@ -2022,3 +2157,4 @@ If Time > 1455 then begin
 Sell ("+L.Time") all contracts next bar at market;
 Buytocover ("-S.Time") all contracts next bar at market;
 end;
+
